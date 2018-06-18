@@ -18,37 +18,67 @@ from moto import mock_sts
 _mock_sts = mock_sts()
 _mock_sts.start()
 
-class EnvironmentMock():
-
+class EnvironmentMock(object):
+    """
+    Mocks up the environement variables for testing.
+    """
     roles = ['dev', 'test', 'admin']
 
-    def __init__(self, name=None, region=None):
-        # Defaults to name=instatruck and region=Australia unless specified
+    def __init__(self, name="Australia", region="instatruck"):
+        """
+        Constructor
+        :param name: Name, defaults to instatruck
+        :param region: Region, defaults to Australia
+        """
         self._role = EnvironmentMock.get_roles()[0]
-        self._name = name or 'instatruck'
-
+        # Defaults to name=instatruck and region=Australia unless specified
+        self._name = name
         # public property
-        self.region = region or "Australia"
+        self.region = region
 
     @staticmethod
     def get_account_number():
+        """
+        Mocks Account number getter.
+        :return: String with 13579
+        """
         return '13579'
 
     def get_name(self):
+        """
+        Returns name.
+        :return: String with name.
+        """
         return self._name
 
     @staticmethod
     def get_roles():
+        """
+        Returns roles.
+        :return: List [] of strings with role names
+        """
         return EnvironmentMock.roles
 
     def get_role(self):
+        """
+        Returns singular role
+        :return: string with role name
+        """
         return self._role
 
     def set_role(self, role):
+        """
+        Sets singular role.
+        :param role: String with role.
+        :return:
+        """
         self._role = role
 
 
 class Wrapper(object):
+    """
+    A big ol' hairball of static wrapping
+    """
     _role_session_cache = {}
     _session_cache = {}
     _console_available = True
@@ -56,32 +86,30 @@ class Wrapper(object):
 
     @staticmethod
     def get_session(environment, duration_seconds=86400):
+        """
+        Returns the session, and configures per account locks.
+        :param environment:
+        :param duration_seconds:
+        :return:
+        """
 
         with Wrapper._locks['all']:
-
             if environment.get_account_number() not in Wrapper._locks:
                 Wrapper._locks[environment.get_account_number()] = Lock()
                 Wrapper._locks[environment.get_account_number() + '-role-session-lock'] = Lock()
 
-        # TODO: whilst we've solve concurrency problems there's an opporuntity here to improve performance through reuse
+        # TODO: whilst we've solved concurrency problems there's an opporuntity here to improve performance through reuse
         with Wrapper._locks[environment.get_account_number()]:
-
             session = Wrapper._get_cached_role_session(environment)
-
             if session:
                 return session
 
         with Wrapper._locks['all']:
-
             session = Wrapper._get_user_session_from_disk_cache(environment)
-
             if environment.get_role():
-
                 if session is None:
                     session = Wrapper._get_user_session(environment, duration_seconds)
-
                 with Wrapper._locks[environment.get_account_number() + '-role-session-lock']:
-
                     if not Wrapper._get_user_role(environment):
                         return Wrapper._set_user_role(environment, session)
 
@@ -89,23 +117,35 @@ class Wrapper(object):
 
             else:
 
-                session = Session(region_name=environment.region, profile_name=os.environ.get('Wrapper_PROFILE', 'default'))
+                session = Session(region_name=environment.region,
+                                  profile_name=os.environ.get('Wrapper_PROFILE', 'default'))
 
         return session
 
     @staticmethod
     def _get_mfa_serial():
+        """
+        Retrieves the Multi factor auth serial
+        :return: mfa_serial
+        """
         try:
             if os.environ.get('Wrapper_PROFILE'):
                 mfa_serial = Wrapper.get_mfa_serial(aws_profile=os.environ.get('Wrapper_PROFILE'))
             else:
                 mfa_serial = Wrapper.get_mfa_serial()
-        except:
+        except Exception:
+            logging.exception("Exception raised")
             mfa_serial = None
         return mfa_serial
 
     @staticmethod
     def _get_user_session(environment, duration_seconds):
+        """
+        Retrieves the user session , bouncing it through the session cache.
+        :param environment:
+        :param duration_seconds:
+        :return:
+        """
         log = logging.getLogger(__name__)
 
         if not Wrapper._console_available:
@@ -117,7 +157,7 @@ class Wrapper(object):
         mfa_serial = Wrapper._get_mfa_serial()
 
         if mfa_serial is None:
-            log.debug('Couldn\'t find MFA serial, getting session without MFA')
+            log.debug("Couldn't find MFA serial, getting session without MFA")
             # get a session token
             response = Session().client('sts').get_session_token(DurationSeconds=duration_seconds)
         else:
@@ -140,7 +180,13 @@ class Wrapper(object):
 
     @staticmethod
     def _get_session_for_assumed_role(environment, session, role=None):
-
+        """
+        Retrieves the session for an assumed role
+        :param environment:
+        :param session:
+        :param role:
+        :return: session
+        """
         log = logging.getLogger(__name__)
 
         if role is None:
@@ -170,33 +216,39 @@ class Wrapper(object):
 
     @staticmethod
     def _get_cached_role_session(environment):
-
+        """
+        Retrieves the role session from the cache, if its available and fresh
+        :param environment:
+        :return: Session OR None
+        """
         log = logging.getLogger(__name__)
-
         if environment.get_role():
-
             session_key = environment.get_account_number()
-
             if session_key in Wrapper._role_session_cache:
                 session, data = Wrapper._role_session_cache[session_key]
                 expiration = data['Expiration']
                 if expiration > datetime.datetime.now(expiration.tzinfo):
                     log.debug('used cached role session for ' + environment.get_name())
                     return session
-
         return None
 
     @staticmethod
     def _get_user_session_from_disk_cache(environment):
-
+        """
+        Retrieves the user session from the disk cache
+        :param environment:
+        :return: session or None
+        """
         file_name = Wrapper._get_cached_token_file_name()
         if not os.path.exists(file_name):
+            logging.info("{} does not exist".format(file_name))
             return None
 
         try:
             with open(file_name, 'r') as token_file:
                 data = json.loads(token_file.read())
-        except:
+        except Exception: #I'd just use IOError here, but it might not catch JSON bugs.
+            logging.exception("Error raised")
             return None
 
         expiration = dateutil.parser.parse(data['Expiration'])
@@ -214,7 +266,11 @@ class Wrapper(object):
 
     @staticmethod
     def _save_session_to_disk_cache(session):
-
+        """
+        Saves the session to disk
+        :param session:
+        :return: None
+        """
         log = logging.getLogger(__name__)
 
         data = session
@@ -227,18 +283,27 @@ class Wrapper(object):
 
     @staticmethod
     def _get_cached_token_file_name():
-        profile = os.environ.get("Wrapper_PROFILE") or 'default';
+        """
+        Retrieves cached token filename
+        :return: string with filename
+        """
+        profile = os.environ.get("Wrapper_PROFILE",'default')
         file_name = 'cached-session-token-' + profile + '.json'
         directory = expanduser('~/insterview/cache')
 
         if not os.path.exists(directory):
             os.makedirs(directory)
 
-        return directory + '/' + file_name
+        return os.path.join(directory, file_name)
 
     @staticmethod
     def get_mfa_serial(aws_profile=None, aws_config_file='~/.aws/config'):
-
+        """
+        Retrieves AWS Multi Factor Auth serial (I think ~ Shayne)
+        :param aws_profile: AWS Profile
+        :param aws_config_file: AWS Config file, defaults to ~/.aws/config
+        :return: Returns the MFA Serial
+        """
         log = logging.getLogger(__name__)
         log.debug('retrieving mfa serial')
 
@@ -251,7 +316,10 @@ class Wrapper(object):
             config = configparser.RawConfigParser()
             config.read(expanduser(aws_config_file))
             if not config.has_section(section):
-                raise 'Requested profile ' + aws_profile + ' does not exist in ' + aws_config_file
+                raise Exception('Requested profile {} does not exist in {}'.format(
+                    aws_profile,
+                    aws_config_file
+                ))
 
             return config.get(section, 'mfa_serial')
 
@@ -268,6 +336,13 @@ class Wrapper(object):
 
     @staticmethod
     def _set_user_role(environment, session):
+        """
+        Iterates through roles and crash-tests retrievinga session for them until
+        a suitable one is found, otherwise returns Nnone
+        :param environment:
+        :param session:
+        :return: session
+        """
         log = logging.getLogger(__name__)
         for role in environment.get_roles():
             try:
@@ -277,7 +352,8 @@ class Wrapper(object):
                 environment.set_role(role)
                 log.debug('setting role: ' + role)
                 return result
-            except:
+            except Exception:
+                logging.exception("Exception raised")
                 continue
 
         log.debug('Did not find any roles you can use for environment ' + environment.get_name())
@@ -285,12 +361,24 @@ class Wrapper(object):
 
     @staticmethod
     def _save_user_role(environment, role):
+        """
+        Saves user role for account number to data dir
+        :param environment:
+        :param role:
+        :return: int for write success status from low level api
+        """
         file_name = os.path.expanduser('~/insterview/' + environment.get_account_number() + '.role')
         with open(file_name, 'w') as role_file:
-            return role_file.write(role)
+            ret = role_file.write(role) #Ret = , then return to ensure with  block cleans up.
+        return ret
 
     @staticmethod
     def _get_user_role(environment):
+        """
+        Retrieves user role for the account specified in the environment
+        :param environment:
+        :return: Role or None if nothing found.
+        """
         file_name = os.path.expanduser('~/insterview/' + environment.get_account_number() + '.role')
         if not os.path.exists(file_name):
             return None
@@ -300,11 +388,15 @@ class Wrapper(object):
 
     @classmethod
     def set_console_available(cls):
+        """
+        sets _console_available to true.
+        :return: nothing
+        """
         Wrapper._console_available = True
 
 
 # Tests
-if __name__=="__main__":
+if __name__ == "__main__":
     env1 = EnvironmentMock()
 
     s1 = Wrapper.get_session(env1)
@@ -313,4 +405,3 @@ if __name__=="__main__":
     assert s1.get_credentials().token == s2.get_credentials().token
 
     # More tests
-
