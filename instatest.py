@@ -18,9 +18,10 @@ from moto import mock_sts
 _mock_sts = mock_sts()
 _mock_sts.start()
 
+
 class EnvironmentMock(object):
     """
-    Mocks up the environement variables for testing.
+    Mocks up the environment variables for testing.
     """
     roles = ['dev', 'test', 'admin']
 
@@ -98,7 +99,8 @@ class Wrapper(object):
                 Wrapper._locks[environment.get_account_number()] = Lock()
                 Wrapper._locks[environment.get_account_number() + '-role-session-lock'] = Lock()
 
-        # TODO: whilst we've solved concurrency problems there's an opporuntity here to improve performance through reuse
+        # TODO: whilst we've solved concurrency problems.
+        #       there's an opporunity here to improve performance through reuse
         with Wrapper._locks[environment.get_account_number()]:
             session = Wrapper._get_cached_role_session(environment)
             if session:
@@ -247,7 +249,7 @@ class Wrapper(object):
         try:
             with open(file_name, 'r') as token_file:
                 data = json.loads(token_file.read())
-        except Exception: #I'd just use IOError here, but it might not catch JSON bugs.
+        except Exception:  # I'd just use IOError here, but it might not catch JSON bugs.
             logging.exception("Error raised")
             return None
 
@@ -287,7 +289,7 @@ class Wrapper(object):
         Retrieves cached token filename
         :return: string with filename
         """
-        profile = os.environ.get("Wrapper_PROFILE",'default')
+        profile = os.environ.get("Wrapper_PROFILE", 'default')
         file_name = 'cached-session-token-' + profile + '.json'
         directory = expanduser('~/insterview/cache')
 
@@ -337,11 +339,11 @@ class Wrapper(object):
     @staticmethod
     def _set_user_role(environment, session):
         """
-        Iterates through roles and crash-tests retrievinga session for them until
-        a suitable one is found, otherwise returns Nnone
+        Iterates through roles and crash-tests retrieving session for them until
+        a suitable one is found, otherwise returns None
         :param environment:
         :param session:
-        :return: session
+        :return: session or None
         """
         log = logging.getLogger(__name__)
         for role in environment.get_roles():
@@ -369,7 +371,7 @@ class Wrapper(object):
         """
         file_name = os.path.expanduser('~/insterview/' + environment.get_account_number() + '.role')
         with open(file_name, 'w') as role_file:
-            ret = role_file.write(role) #Ret = , then return to ensure with  block cleans up.
+            ret = role_file.write(role)  # Ret = , then return to ensure with  block cleans up.
         return ret
 
     @staticmethod
