@@ -84,7 +84,7 @@ class Wrapper(object):
     _session_cache = {}
     _console_available = True
     _locks = {'all': Lock()}
-    _response = [] #For testing.
+    _response = []  # For testing.
 
     @staticmethod
     def get_session(environment, duration_seconds=86400):
@@ -101,7 +101,7 @@ class Wrapper(object):
                 Wrapper._locks[environment.get_account_number() + '-role-session-lock'] = Lock()
 
         # TODO: whilst we've solved concurrency problems.
-        #       there's an opporunity here to improve performance through reuse
+        #       there's an opportunity here to improve performance through reuse
         with Wrapper._locks[environment.get_account_number()]:
             session = Wrapper._get_cached_role_session(environment)
             if session:
@@ -115,11 +115,8 @@ class Wrapper(object):
                 with Wrapper._locks[environment.get_account_number() + '-role-session-lock']:
                     if not Wrapper._get_user_role(environment):
                         return Wrapper._set_user_role(environment, session)
-
                     session = Wrapper._get_session_for_assumed_role(environment, session)
-
             else:
-
                 session = Session(region_name=environment.region,
                                   profile_name=os.environ.get('Wrapper_PROFILE', 'default'))
 

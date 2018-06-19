@@ -1,12 +1,11 @@
 import json
 
 from instatest import EnvironmentMock,Wrapper
-import pytest
 import boto3
-from moto import mock_s3
 import hashlib
 import os
 import logging
+
 #Utility file hash
 #https://stackoverflow.com/questions/3431825/generating-an-md5-checksum-of-a-file
 def md5_file_hash(fname):
@@ -16,13 +15,7 @@ def md5_file_hash(fname):
             hash_md5.update(chunk)
     return hash_md5.hexdigest()
 
-
 class TestWrapper():
-
-#    @classmethod
-#    def setup_test(cls):
-#        cls.env = EnvironmentMock()
-
 
     def test_get_session(cls):
         env = EnvironmentMock()
@@ -66,11 +59,12 @@ class TestWrapper():
 
 
     def test_get_user_session_from_disk_cache(cls):
-        return
+
         env = EnvironmentMock()
-        s1 = Wrapper.get_session(env)
-        s2 = Wrapper._get_user_session_from_disk_cache(env)
-        assert s1 == s2
+        s1 = Wrapper._get_user_session_from_disk_cache(env)
+        assert s1.__class__ == boto3.session.Session
+        assert s1.profile_name == 'default'
+        assert s1.get_credentials().token != ''
 
     def test_save_session_from_disk_cache(cls):
         env = EnvironmentMock()
