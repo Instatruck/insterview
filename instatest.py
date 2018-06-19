@@ -84,6 +84,7 @@ class Wrapper(object):
     _session_cache = {}
     _console_available = True
     _locks = {'all': Lock()}
+    _response = [] #For testing.
 
     @staticmethod
     def get_session(environment, duration_seconds=86400):
@@ -174,6 +175,7 @@ class Wrapper(object):
             )
         data = response['Credentials']
         data['Expiration'] = str(data['Expiration'])  # to help serialization
+        Wrapper._response = data
         Wrapper._save_session_to_disk_cache(data)
 
         session = Wrapper._get_user_session_from_disk_cache(environment)
@@ -369,9 +371,11 @@ class Wrapper(object):
         :param role:
         :return: int for write success status from low level api
         """
-        file_name = os.path.expanduser('~/insterview/' + environment.get_account_number() + '.role')
+        file_name = os.path.expanduser('~/insterview/{}.role'.format(
+            environment.get_account_number()
+        ))
         with open(file_name, 'w') as role_file:
-            ret = role_file.write(role)  # Ret = , then return to ensure with  block cleans up.
+            ret = role_file.write(role)  # Ret = write , THEN return to ensure with  block cleans up.
         return ret
 
     @staticmethod
@@ -381,7 +385,9 @@ class Wrapper(object):
         :param environment:
         :return: Role or None if nothing found.
         """
-        file_name = os.path.expanduser('~/insterview/' + environment.get_account_number() + '.role')
+        file_name = os.path.expanduser('~/insterview/{}.role'.format(
+            environment.get_account_number()
+        ))
         if not os.path.exists(file_name):
             return None
 
