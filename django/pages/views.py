@@ -3,7 +3,7 @@ import django
 from datetime import datetime
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.db.models import Max, Min
+from django.db.models import Q, Max, Min
 from django.shortcuts import render, get_object_or_404
 from .models import Movie, Director, Actor
 from .forms import MovieForm
@@ -18,6 +18,7 @@ from .serializers import (
 from rest_framework.views import APIView
 from rest_framework import status
 from utils.response import CustomResponse
+from utils.pagination import GetPageAndPageSizeFromRequest
 from utils.tools import parse_date
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "myapp.settings")
