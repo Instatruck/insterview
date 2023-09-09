@@ -7,7 +7,7 @@ import django
 def SeedData():
     director1 = Director.objects.create(
                 name="Director 1",
-                date="January 1, 1980",
+                date="01011975",
                 place="Los Angeles, CA",
                 masterpiece="Best Movie Ever",
                 award_win=3,
@@ -18,7 +18,7 @@ def SeedData():
 
     director2 = Director.objects.create(
         name="Director 2",
-        date="February 2, 1990",
+        date="02022012",
         place="New York, NY",
         masterpiece="Greatest Film of All Time",
         award_win=5,
@@ -29,7 +29,7 @@ def SeedData():
 
     director3 = Director.objects.create(
         name="Director 3",
-        date="February 25, 1999",
+        date="02121999",
         place="New York, NY",
         masterpiece="Something Amazing",
         award_win=1,
@@ -41,7 +41,7 @@ def SeedData():
     # Create Actor instances
     actor1 = Actor.objects.create(
         name="Actor 1",
-        date="March 3, 1970",
+        date="03031970",
         place="Chicago, IL",
         masterpiece="Oscar-Winning Performance",
         award_win=2,
@@ -52,7 +52,7 @@ def SeedData():
 
     actor2 = Actor.objects.create(
         name="Actor 2",
-        date="April 4, 1985",
+        date="04041985",
         place="Miami, FL",
         masterpiece="Critically Acclaimed Role",
         award_win=1,
@@ -160,6 +160,91 @@ def SeedData():
         gross_earning_in_mil=78.0,
         director=director3,  # Change the director as needed
         actor=actor2  # Change the actor as needed
+    )
+
+    # Create Movie 7
+    movie7 = Movie.objects.create(
+        movieid=7,
+        year=2005,  # Change the year as needed
+        rank=4,  # Change other attributes as needed
+        title="Movie 7",
+        description="Description for Movie 7.",
+        duration=90,
+        genres="Comedy",
+        rating=6,
+        metascore=50,
+        votes=1000,
+        gross_earning_in_mil=50.0,
+        director=director3,  # Change the director as needed
+        actor=actor2  # Change the actor as needed
+    )
+
+    # Create Movie 8
+    movie8 = Movie.objects.create(
+        movieid=8,
+        year=1997,  # Change the year as needed
+        rank=4,  # Change other attributes as needed
+        title="Movie 8",
+        description="Description for Movie 8.",
+        duration=120,
+        genres="Comedy",
+        rating=9,
+        metascore=90,
+        votes=10,
+        gross_earning_in_mil=12.0,
+        director=director1,  # Change the director as needed
+        actor=actor2  # Change the actor as needed
+    )
+
+    # Create Movie 9
+    movie9 = Movie.objects.create(
+        movieid=9,
+        year=2001,  # Change the year as needed
+        rank=92,  # Change other attributes as needed
+        title="Movie 9",
+        description="Description for Movie 9.",
+        duration=150,
+        genres="Comedy",
+        rating=10,
+        metascore=100,
+        votes=2,
+        gross_earning_in_mil=650.0,
+        director=director3,  # Change the director as needed
+        actor=actor1  # Change the actor as needed
+    )
+
+    # Create Movie 10
+    movie10 = Movie.objects.create(
+        movieid=10,
+        year=2018,  # Change the year as needed
+        rank=50,  # Change other attributes as needed
+        title="Movie 10",
+        description="Description for Movie 10.",
+        duration=120,
+        genres="Comedy",
+        rating=2,
+        metascore=20,
+        votes=5,
+        gross_earning_in_mil=12.0,
+        director=director3,  # Change the director as needed
+        actor=actor2  # Change the actor as needed
+    )
+
+    # Create Movie 11
+    movie11 = Movie.objects.create(
+        movieid=11,
+        year=2017,  # Change the year as needed
+        rank=58,  # Change other attributes as needed
+        title="Movie 11",
+        description="Description for Movie 11.",
+        duration=60,
+        genres="Comedy",
+        rating=50,
+        metascore=70,
+        votes=6,
+        gross_earning_in_mil=127.0,
+        director=director2,  # Change the director as needed
+        actor=actor1  # Change the actor as needed
     )
 class Command(BaseCommand):
     def add_arguments(self, parser):
