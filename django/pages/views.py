@@ -1,20 +1,25 @@
+import os
+import django
 from datetime import datetime
 from django.contrib import messages
+from django.core.paginator import Paginator
+from django.db.models import Max, Min
 from django.shortcuts import render, get_object_or_404
-from django.db.models import Q, Max, Min
 from .models import Movie, Director, Actor
+from .forms import MovieForm
+from .serializers import (
+    DirectorSerializer,
+    ActorSerializer,
+    MovieSerializer,
+    MovieLinkSerializer,
+    DateFilteringSerializer,
+    CloseToBirthdayRequestSerializer,
+)
 from rest_framework.views import APIView
 from rest_framework import status
-import csv
-import os
-from os.path import join
-from .forms import MovieForm
-from django.core.paginator import Paginator
-from .serializers import DirectorSerializer, ActorSerializer, MovieSerializer, MovieLinkSerializer, DateFilteringSerializer, CloseToBirthdayRequestSerializer
 from utils.response import CustomResponse
-from utils.pagination import GetPageAndPageSizeFromReuest
 from utils.tools import parse_date
-import django
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "myapp.settings")
 django.setup()
 

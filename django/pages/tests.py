@@ -1,13 +1,18 @@
+from datetime import datetime
+from django.core.paginator import Paginator
+from django.urls import reverse
 from django.test import TestCase
 from pages.management.commands.seed_data import SeedData
-from django.urls import reverse
+from pages.models import Movie, Director, Actor
+from pages.serializers import (
+    MovieSerializer,
+    DirectorSerializer,
+    ActorSerializer,
+    MovieLinkSerializer,
+)
 from rest_framework import status
-from rest_framework.test import APIClient
-from pages.models import Movie, Director, Actor 
-from pages.serializers import MovieSerializer, DirectorSerializer, ActorSerializer, MovieLinkSerializer
-from django.core.paginator import Paginator
-from datetime import datetime
 from utils.tools import parse_date
+
 # Create your tests here.
 class APITest(TestCase):
     def setUp(self):
