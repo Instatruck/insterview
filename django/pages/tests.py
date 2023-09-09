@@ -14,7 +14,7 @@ class APITest(TestCase):
         SeedData()
 
     def test_get_list_movies(self):
-        url = reverse('movie') + f'?page=1&page-size=5'
+        url = reverse('movie-api') + f'?page=1&page-size=5'
         response = self.client.get(url)
         # Test API call
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -30,7 +30,7 @@ class APITest(TestCase):
         self.assertEqual(data, response.data['data'])
 
     def test_get_list_movies_with_filtering(self):
-        url = reverse('movie') + f'?page=1&page-size=100&start_year=1900&end_year=2022'
+        url = reverse('movie-api') + f'?page=1&page-size=100&start_year=1900&end_year=2022'
         response = self.client.get(url)
         # Test API call
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -46,13 +46,13 @@ class APITest(TestCase):
         self.assertEqual(data, response.data['data'])
 
     def test_get_list_movies_with_filtering_but_wrong_data(self):
-        url = reverse('movie') + f'?page=1&page-size=5&start_year=wrong_type&end_year=wrong_type'
+        url = reverse('movie-api') + f'?page=1&page-size=5&start_year=wrong_type&end_year=wrong_type'
         response = self.client.get(url)
         # Test API call
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_get_list_directors(self):
-        url = reverse('director') + f'?page=1&page-size=1'
+        url = reverse('director-api') + f'?page=1&page-size=1'
         response = self.client.get(url)
         # Test API call
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -68,7 +68,7 @@ class APITest(TestCase):
         self.assertEqual(data, response.data['data'])
 
     def test_get_list_actors(self):
-        url = reverse('actor') + f'?page=1&page-size=1'
+        url = reverse('actor-api') + f'?page=1&page-size=1'
         response = self.client.get(url)
         # Test API call
         self.assertEqual(response.status_code, status.HTTP_200_OK)

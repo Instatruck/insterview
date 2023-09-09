@@ -146,6 +146,9 @@ class ClosetToActorBirthday(APIView):
         
 
 def director(request):
+    base_dir = os.path.abspath(__file__)
+    for i in range(3):  
+        base_dir = os.path.dirname(base_dir)
     all_director = Director.objects.all()
     paginator = Paginator(all_director, 50)
     page = request.GET.get('page')
@@ -155,6 +158,9 @@ def director(request):
 
 
 def movie(request):
+    base_dir = os.path.abspath(__file__)
+    for i in range(3):
+        base_dir = os.path.dirname(base_dir)
     all_movies = Movie.objects.all()
     paginator = Paginator(all_movies, 50)
     page = request.GET.get('page')
@@ -163,6 +169,9 @@ def movie(request):
 
 
 def actor(request):
+    base_dir = os.path.abspath(__file__)
+    for i in range(3):
+        base_dir = os.path.dirname(base_dir)
     all_actor = Actor.objects.all()
     paginator = Paginator(all_actor, 50)
     page = request.GET.get('page')
