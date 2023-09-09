@@ -258,3 +258,4 @@ class Command(BaseCommand):
             print('-> Complete')
         except:
             print('-> Something went wrong while seeding data. Could be the seed data alrady exists')
+            pass
