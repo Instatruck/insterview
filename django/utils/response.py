@@ -16,13 +16,27 @@ class CustomResponse:
     def to_json_response(self):
         response_data = {"status": self.status_code, "message": self.message, "data": self.data}
         if self.pagination != None :
-            data_on_page = self.pagination.page(self.page)
+            try:
+                data_on_page = self.pagination.page(self.page)
+                has_next = data_on_page.has_next()
+                has_previous = data_on_page.has_previous()
+            except:
+                if self.pagination.num_pages > self.page:
+                    has_next = True 
+                else:
+                    has_next = False
+
+                if self.pagination.num_pages >= self.page-1:
+                    has_previous = True 
+                else:
+                    has_previous = False
+        
             page_meta = {
                 "page":  self.page,
                 "page_size": self.page_size,
                 "total_pages": self.pagination.num_pages,
-                "has_next": data_on_page.has_next(),
-                "has_previous": data_on_page.has_previous()
+                "has_next": has_next,
+                "has_previous": has_previous
             }
             response_data['pagination'] = page_meta
 
