@@ -23,3 +23,6 @@ Test was carried out by `Python 3.11`
 1. Python test Goal
 2. Django / Django Rest Framework test goals
 
+# API Document
+## Postman
+Load file `Instatruck Chau Works.postman_collection.json` in the source
