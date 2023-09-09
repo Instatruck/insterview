@@ -32,9 +32,10 @@ def clean_string_list(stringa):
 class DirectorAPI(APIView):
     def get(self, request):
         page, page_size = GetPageAndPageSizeFromReuest(request)
-        all_directors = Director.objects.all()
+        all_directors = Director.objects.all().order_by('name')
         paginator = Paginator(all_directors, page_size)
-        return CustomResponse(status_code=status.HTTP_200_OK, data=DirectorSerializer(all_directors, many=True).data, pagination=paginator, page=page, page_size=page_size).to_json_response()
+        data = paginator.page(page).object_list
+        return CustomResponse(status_code=status.HTTP_200_OK, data=DirectorSerializer(data, many=True).data, pagination=paginator, page=page, page_size=page_size).to_json_response()
 
 class MovieAPI(APIView):
     serializer_class = DateFilteringSerializer
@@ -51,15 +52,20 @@ class MovieAPI(APIView):
         if serializer.data['end_year'] != None:
             filtering['year__lte'] = serializer.data['end_year']
 
-        all_movies = Movie.objects.filter(**filtering).all()
-        paginator = Paginator(all_movies, 5)
-        return CustomResponse(status_code=status.HTTP_200_OK, data=MovieSerializer(all_movies, many=True).data, pagination=paginator, page=page, page_size=page_size).to_json_response()
+        all_movies = Movie.objects.filter(**filtering).all().order_by('movieid')
+        paginator = Paginator(all_movies, page_size)
+        try:
+            data = paginator.page(page).object_list
+        except:
+            data = []
+        return CustomResponse(status_code=status.HTTP_200_OK, data=MovieSerializer(data, many=True).data, pagination=paginator, page=page, page_size=page_size).to_json_response()
 class ActorAPI(APIView):
     def get(self, request):
         page, page_size = GetPageAndPageSizeFromReuest(request)
-        all_actors = Actor.objects.all()
-        paginator = Paginator(all_actors, 5)
-        return CustomResponse(status_code=status.HTTP_200_OK, data=ActorSerializer(all_actors, many=True).data, pagination=paginator, page=page, page_size=page_size).to_json_response()
+        all_actors = Actor.objects.all().order_by('name')
+        paginator = Paginator(all_actors, page_size)
+        data = paginator.page(page).object_list
+        return CustomResponse(status_code=status.HTTP_200_OK, data=ActorSerializer(data, many=True).data, pagination=paginator, page=page, page_size=page_size).to_json_response()
 
 class ActorFilmsAPI(APIView):
     def get(self, request, id):
@@ -67,9 +73,10 @@ class ActorFilmsAPI(APIView):
         actor = Actor.objects.filter(pk=id).first()
         if not actor:
             return CustomResponse(status_code=status.HTTP_400_BAD_REQUEST, message="actor id not found").to_json_response()    
-        list_movies = Movie.objects.filter(actor=actor)
-        paginator = Paginator(list_movies, page)
-        return CustomResponse(status_code=status.HTTP_200_OK, data=MovieLinkSerializer(list_movies, many=True).data, pagination=paginator, page=page, page_size=page_size).to_json_response()
+        list_movies = Movie.objects.filter(actor=actor).order_by('movieid')
+        paginator = Paginator(list_movies, page_size)
+        data = paginator.page(page).object_list
+        return CustomResponse(status_code=status.HTTP_200_OK, data=MovieLinkSerializer(data, many=True).data, pagination=paginator, page=page, page_size=page_size).to_json_response()
 
 class DirectorFilmsAPI(APIView):
     def get(self, request, id):
@@ -77,9 +84,11 @@ class DirectorFilmsAPI(APIView):
         director = Director.objects.filter(pk=id).first()
         if not director:
             return CustomResponse(status_code=status.HTTP_400_BAD_REQUEST, message="actor id not found").to_json_response()    
-        list_movies = Movie.objects.filter(director=director)
-        paginator = Paginator(list_movies, page)
-        return CustomResponse(status_code=status.HTTP_200_OK, data=MovieLinkSerializer(list_movies, many=True).data, pagination=paginator, page=page, page_size=page_size).to_json_response()
+        list_movies = Movie.objects.filter(director=director).order_by('movieid')
+        paginator = Paginator(list_movies, page_size)
+        data = paginator.page(page).object_list
+        return CustomResponse(status_code=status.HTTP_200_OK, data=MovieLinkSerializer(data, many=True).data, pagination=paginator, page=page, page_size=page_size).to_json_response()
+
 
 def recommendation(request):
     return render(request, "recommendation.html", {})
