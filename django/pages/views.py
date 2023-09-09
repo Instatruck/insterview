@@ -145,6 +145,29 @@ class ClosetToActorBirthday(APIView):
         return CustomResponse(status_code=status.HTTP_200_OK, data=ActorSerializer(data, many=True).data, pagination=paginator, page=page, page_size=page_size).to_json_response()
         
 
+def director(request):
+    all_director = Director.objects.all()
+    paginator = Paginator(all_director, 50)
+    page = request.GET.get('page')
+    directors = paginator.get_page(page)
+
+    return render(request, "director.html", {'Director': directors})
+
+
+def movie(request):
+    all_movies = Movie.objects.all()
+    paginator = Paginator(all_movies, 50)
+    page = request.GET.get('page')
+    movies = paginator.get_page(page)
+    return render(request, "movie.html", {'Movie': movies})
+
+
+def actor(request):
+    all_actor = Actor.objects.all()
+    paginator = Paginator(all_actor, 50)
+    page = request.GET.get('page')
+    actors = paginator.get_page(page)
+    return render(request, "actor.html", {'Actor': actors})
 
 def recommendation(request):
     return render(request, "recommendation.html", {})
