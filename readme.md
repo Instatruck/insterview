@@ -1,6 +1,6 @@
 # Instatruck coding test
 
-Small coding tests to evaluate development skills.
+Small coding tests to evaluate development skills using Python, Django and Django Rest Framework.
 
 ## Python test Goal
 
@@ -17,7 +17,7 @@ The aim is to understand your ability and pragmaticness of writing, testing and 
  * executing `python -m instatest` should not fail.
  * any tests should be able to be run with a single command in the root repository folder.
 
-## Django test goal
+## Django / Django Rest Framework test goals
 
 In the folder 'django', there is a django project which runs in a docker container. From inside the `django` folder, the docker container can be built with:
 
@@ -42,7 +42,11 @@ Modify the django project to use Django Rest Framework to convert the project in
   - `/directors/` lists all directors in the database with the fields 'name', 'birthdate' and 'birthplace', and a 'films' field which is a URL link
   - `/directors/<id>/films/` lists the films for director <id>, which matches the 'films' url link in the directors information
 
-### 2. Implement filtering user requirement
+Note that the database and model are very basic, and some relationships may not be many-to-many. There is no need to fix this for this goal.
+
+Ensure that tests are provided to show that the new endpoints are working.
+
+### 2. Implement a date-filtering user requirement
 
 User Story:
 
@@ -79,16 +83,22 @@ I want to know the highest rated movies
 So that I can choose a good movie more easily
 ```
 
-BDD Scenario:
+BDD Scenarios:
 ```
-GIVEN I am using the movie API
-WHEN I access the '/movies/best/<n>' endpoint
-THEN the API only shows me the movies <movielist> sorted by rating any then by metascore
+Scenario:
+  GIVEN I am using the movie API
+  WHEN I access the '/movies/best/<n>' endpoint
+  THEN the API only shows me the movies <movielist> sorted by rating and then by metascore
 
-EXAMPLES:
-  | n | movielist                                |
-  | 3 | The Dark Knight, Inception, Spider-Man: Into the Spider-Verse |
-  | 5 | The Dark Knight, Inception, Spider-Man: Into the Spider-Verse, Interstellar, Whiplash |
+  EXAMPLES:
+    | n | movielist                                |
+    | 3 | The Dark Knight, Inception, Spider-Man: Into the Spider-Verse |
+    | 5 | The Dark Knight, Inception, Spider-Man: Into the Spider-Verse, Interstellar, Whiplash |
+
+Sceario:
+  GIVEN I am using the movie API
+  WHEN I access the '/movies/best/' endpoint
+  THEN the API shows me the top 10 movies sorted by rating and then by metascore
 ```
 
 Implement the scenarios above, including passing tests. Include handling and tests for invalid inputs which you think are necessary.
@@ -105,7 +115,7 @@ I want to know which actors are born closest to me
 So that I can learn some interesting information
 ```
 
- BDD Scenario:
+BDD Scenario:
 ```
 GIVEN I am using the movie API
 WHEN I access the `/actors/birthdays/<date>/` endpoint
