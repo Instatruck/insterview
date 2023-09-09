@@ -1,5 +1,6 @@
 import unicodedata
 import re
+from datetime import datetime
 
 def sanitize_to_slug(string):
     # Convert string to lowercase
@@ -24,3 +25,11 @@ def sanitize_to_slug(string):
     string = string.strip('_')
 
     return string
+
+
+# Function to parse date string into a datetime object
+def parse_date(date_str):
+    try:
+        return datetime.strptime(date_str, '%d%m%Y')
+    except ValueError:
+        return None  # Handle invalid date strings as needed
