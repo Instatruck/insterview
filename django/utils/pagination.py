@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.paginator import Paginator
 
-def GetPageAndPageSizeFromReuest(request):
+def GetPageAndPageSizeFromRequest(request):
     page = request.GET.get('page', 1)
     try: 
         page =  int(page)

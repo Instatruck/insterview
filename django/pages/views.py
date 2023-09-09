@@ -42,7 +42,7 @@ def clean_string_list(stringa):
 
 class DirectorAPI(APIView):
     def get(self, request):
-        page, page_size = GetPageAndPageSizeFromReuest(request)
+        page, page_size = GetPageAndPageSizeFromRequest(request)
         all_directors = Director.objects.all().order_by('name')
         paginator = Paginator(all_directors, page_size)
         data = paginator.page(page).object_list
@@ -53,7 +53,7 @@ class MovieAPI(APIView):
     serializer_class = DateFilteringSerializer
 
     def get(self, request):
-        page, page_size = GetPageAndPageSizeFromReuest(request)
+        page, page_size = GetPageAndPageSizeFromRequest(request)
         serializer = self.serializer_class(data=request.GET)
         if not serializer.is_valid():
             errors = serializer.errors
@@ -77,7 +77,7 @@ class MovieAPI(APIView):
 
 class ActorAPI(APIView):
     def get(self, request):
-        page, page_size = GetPageAndPageSizeFromReuest(request)
+        page, page_size = GetPageAndPageSizeFromRequest(request)
         all_actors = Actor.objects.all().order_by('name')
         paginator = Paginator(all_actors, page_size)
         data = paginator.page(page).object_list
@@ -86,7 +86,7 @@ class ActorAPI(APIView):
 
 class ActorFilmsAPI(APIView):
     def get(self, request, id):
-        page, page_size = GetPageAndPageSizeFromReuest(request)
+        page, page_size = GetPageAndPageSizeFromRequest(request)
         actor = Actor.objects.filter(pk=id).first()
         if not actor:
             return CustomResponse(status_code=status.HTTP_400_BAD_REQUEST, message="actor id not found").to_json_response()
@@ -98,7 +98,7 @@ class ActorFilmsAPI(APIView):
 
 class DirectorFilmsAPI(APIView):
     def get(self, request, id):
-        page, page_size = GetPageAndPageSizeFromReuest(request)
+        page, page_size = GetPageAndPageSizeFromRequest(request)
         director = Director.objects.filter(pk=id).first()
         if not director:
             return CustomResponse(status_code=status.HTTP_400_BAD_REQUEST, message="actor id not found").to_json_response()
@@ -130,7 +130,7 @@ class BestMoviesAPI(APIView):
 class ClosetToActorBirthday(APIView):
     serializer_class=CloseToBirthdayRequestSerializer
     def get(self, request, date):
-        page, page_size = GetPageAndPageSizeFromReuest(request)
+        page, page_size = GetPageAndPageSizeFromRequest(request)
         try:
             user_date = datetime.strptime(date, '%Y-%m-%d')
         except ValueError:
