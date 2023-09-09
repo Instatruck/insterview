@@ -54,3 +54,6 @@ class MovieLinkSerializer(serializers.ModelSerializer):
 class DateFilteringSerializer(serializers.Serializer):
     start_year = serializers.IntegerField(allow_null=True, required=False)
     end_year = serializers.IntegerField(allow_null=True, required=False)
+
+class CloseToBirthdayRequestSerializer(serializers.Serializer):
+    date = serializers.DateField(format='%Y-%m-%d')
