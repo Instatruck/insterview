@@ -2,13 +2,15 @@ from django.contrib import messages
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q, Max, Min
 from .models import Movie, Director, Actor
-
-
+from rest_framework.views import APIView
+from rest_framework import status
 import csv, os
 from os.path import join
 from .forms import MovieForm
 from django.core.paginator import Paginator
-
+from .serializers import DirectorSerializer, ActorSerializer, MovieSerializer, MovieLinkSerializer, DateFilteringSerializer
+from utils.response import CustomResponse 
+from utils.pagination import GetPageAndPageSizeFromReuest
 # enable results in terminal
 import django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "myapp.settings")
@@ -27,149 +29,57 @@ def clean_string_list(stringa):
         stringa = stringa.replace(c, "")
     return stringa
 
-def director(request):
-    base_dir = os.path.abspath(__file__)
+class DirectorAPI(APIView):
+    def get(self, request):
+        page, page_size = GetPageAndPageSizeFromReuest(request)
+        all_directors = Director.objects.all()
+        paginator = Paginator(all_directors, page_size)
+        return CustomResponse(status_code=status.HTTP_200_OK, data=DirectorSerializer(all_directors, many=True).data, pagination=paginator, page=page, page_size=page_size).to_json_response()
 
-    for i in range(3):
-        base_dir = os.path.dirname(base_dir)
+class MovieAPI(APIView):
+    serializer_class = DateFilteringSerializer
+    def get(self, request):
+        page, page_size = GetPageAndPageSizeFromReuest(request)
+        serializer = self.serializer_class(data=request.GET)
+        if not serializer.is_valid():
+            errors = serializer.errors
+            return CustomResponse(status_code=status.HTTP_400_BAD_REQUEST, message=errors).to_json_response()
+        
+        filtering = {}
+        if serializer.data['start_year'] != None:
+            filtering['year__gte'] = serializer.data['start_year']
+        if serializer.data['end_year'] != None:
+            filtering['year__lte'] = serializer.data['end_year']
 
-    with open(base_dir + '/Data/director.csv') as g:
-        reader = csv.DictReader(g)
-        for line in reader:
-            try:
-                val = int(line['dr_awards_wins'])
-            except ValueError:
-                val = 0
+        all_movies = Movie.objects.filter(**filtering).all()
+        paginator = Paginator(all_movies, 5)
+        return CustomResponse(status_code=status.HTTP_200_OK, data=MovieSerializer(all_movies, many=True).data, pagination=paginator, page=page, page_size=page_size).to_json_response()
+class ActorAPI(APIView):
+    def get(self, request):
+        page, page_size = GetPageAndPageSizeFromReuest(request)
+        all_actors = Actor.objects.all()
+        paginator = Paginator(all_actors, 5)
+        return CustomResponse(status_code=status.HTTP_200_OK, data=ActorSerializer(all_actors, many=True).data, pagination=paginator, page=page, page_size=page_size).to_json_response()
 
-            try:
-                val_nom = int(line['dr_awards_nomi tions'])
-            except ValueError:
-                val_nom = 0
+class ActorFilmsAPI(APIView):
+    def get(self, request, id):
+        page, page_size = GetPageAndPageSizeFromReuest(request)
+        actor = Actor.objects.filter(pk=id).first()
+        if not actor:
+            return CustomResponse(status_code=status.HTTP_400_BAD_REQUEST, message="actor id not found").to_json_response()    
+        list_movies = Movie.objects.filter(actor=actor)
+        paginator = Paginator(list_movies, page)
+        return CustomResponse(status_code=status.HTTP_200_OK, data=MovieLinkSerializer(list_movies, many=True).data, pagination=paginator, page=page, page_size=page_size).to_json_response()
 
-            tmp = Director(name=line['dr_name'],
-                           date=line['dr_date'],
-                           place=line['dr_place'],
-                           masterpiece=clean_string_list(line['dr_knownfor']),
-                           award_win=val,
-                           award_nom=val_nom,
-                           person_link = line['dr_link'],
-                           award_link = line['dr_awards_link'])
-
-            tmp.save()
-
-    all_director = Director.objects.all()
-
-    paginator = Paginator(all_director, 50)
-    page = request.GET.get('page')
-    directors = paginator.get_page(page)
-
-    return render(request, "director.html", {'Director': directors})
-
-
-def movie(request):
-    base_dir = os.path.abspath(__file__)
-
-    for i in range(3):
-        base_dir = os.path.dirname(base_dir)
-
-    with open(base_dir + '/Data/movie_data_0325.csv') as f:
-        reader = csv.DictReader(f)
-        for line in reader:
-
-            try:
-                director_nm = Director.objects.get(name=line['Director'])
-            except Director.DoesNotExist:
-                director_nm = None
-
-            try:
-                act_nm = Actor.objects.get(name=line['Actor'])
-            except Actor.DoesNotExist:
-                act_nm = None
-
-            try:
-                rate = float(line['Rating'])
-            except ValueError:
-                rate = 0
-
-            try:
-                score = int(line['Metascore'])
-            except ValueError:
-                score = 0
-
-            try:
-                vote_num = int(line['Votes'])
-            except ValueError:
-                vote_num = 0
-
-            try:
-                earned = float(line['Gross_Earning_in_Mil'])
-            except ValueError:
-                earned = 0.0
-
-            tmp = Movie(movieid=line['Movie_ID'],
-                        year=line['Year'],
-                        rank=line['Rank'],
-                        title=line['Title'],
-                        description=line['Description'],
-                        duration=line['Duration'],
-                        genres=line['Genre'],
-                        rating=rate,
-                        metascore=score,
-                        votes=vote_num,
-                        gross_earning_in_mil=earned,
-                        director=director_nm,
-                        actor=act_nm)
-
-            tmp.save()
-
-    all_movies = Movie.objects.all()
-
-    paginator = Paginator(all_movies, 50)
-    page = request.GET.get('page')
-    movies = paginator.get_page(page)
-
-    return render(request, "movie.html", {'Movie': movies})
-
-
-def actor(request):
-    base_dir = os.path.abspath(__file__)
-
-    for i in range(3):
-        base_dir = os.path.dirname(base_dir)
-
-    with open(base_dir + '/Data/star.csv') as g:
-        reader = csv.DictReader(g)
-        for line in reader:
-            try:
-                val = int(line['st_awards_wins'])
-            except ValueError:
-                val = 0
-
-            try:
-                val_nom = int(line['st_awards_nominations'])
-            except ValueError:
-                val_nom = 0
-
-            # .rstrip() is added to remove '\n'
-            # strip(' ') for 'st_name' since some names may have a space the the begining
-            tmp = Actor(name = line['st_name'],
-                        date = line['st_date'],
-                        place = line['st_place'],
-                        masterpiece = clean_string_list(line['st_knownfor']),
-                        award_win = val,
-                        award_nom = val_nom,
-                        person_link = line['st_link'],
-                        award_link = line['st_awards_link'])
-
-            tmp.save()
-
-    all_actor = Actor.objects.all()
-
-    paginator = Paginator(all_actor, 50)
-    page = request.GET.get('page')
-    actors = paginator.get_page(page)
-
-    return render(request, "actor.html", {'Actor': actors})
+class DirectorFilmsAPI(APIView):
+    def get(self, request, id):
+        page, page_size = GetPageAndPageSizeFromReuest(request)
+        director = Director.objects.filter(pk=id).first()
+        if not director:
+            return CustomResponse(status_code=status.HTTP_400_BAD_REQUEST, message="actor id not found").to_json_response()    
+        list_movies = Movie.objects.filter(director=director)
+        paginator = Paginator(list_movies, page)
+        return CustomResponse(status_code=status.HTTP_200_OK, data=MovieLinkSerializer(list_movies, many=True).data, pagination=paginator, page=page, page_size=page_size).to_json_response()
 
 def recommendation(request):
     return render(request, "recommendation.html", {})
