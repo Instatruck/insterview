@@ -1,6 +1,7 @@
 from rest_framework.response import Response
 from rest_framework import status
 from django.core.paginator import Paginator
+from django.http.response import JsonResponse
 
 class CustomResponse:
     def __init__(self, status_code:status, data=None, message="", headers={}, pagination:Paginator=None, page:int=1, page_size:int=5)->Response:
@@ -40,5 +41,5 @@ class CustomResponse:
             }
             response_data['pagination'] = page_meta
 
-        return Response(response_data,
+        return JsonResponse(response_data,
                         status=self.status_code, headers=self.headers, content_type='application/json; charset=utf-8')
