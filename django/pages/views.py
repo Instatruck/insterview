@@ -101,7 +101,7 @@ class DirectorFilmsAPI(APIView):
         page, page_size = GetPageAndPageSizeFromRequest(request)
         director = Director.objects.filter(pk=id).first()
         if not director:
-            return CustomResponse(status_code=status.HTTP_400_BAD_REQUEST, message="actor id not found").to_json_response()
+            return CustomResponse(status_code=status.HTTP_400_BAD_REQUEST, message="director id not found").to_json_response()
         list_movies = Movie.objects.filter(
             director=director).order_by('movieid')
         paginator = Paginator(list_movies, page_size)
