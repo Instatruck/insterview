@@ -1,0 +1,942 @@
+{
+	"info": {
+		"_postman_id": "c1b6c20e-567c-4fab-a6aa-31f6cc35b6b7",
+		"name": "Instatruck Chau Works",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21260639",
+		"_collection_link": "https://lunar-flare-539566.postman.co/workspace/Trigan-Website~2918e89d-9682-46cb-ae20-2daa2d48a129/collection/21260639-c1b6c20e-567c-4fab-a6aa-31f6cc35b6b7?action=share&source=collection_link&creator=21260639"
+	},
+	"item": [
+		{
+			"name": "Get movies",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/movies?page=1&page-size=2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"movies"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "page-size",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Get movies",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/movies?page=1&page-size=2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"movies"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "page-size",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Sat, 09 Sep 2023 19:02:29 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "WSGIServer/0.2 CPython/3.9.18"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept, Cookie"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "325"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 200,\n    \"message\": \"\",\n    \"data\": [\n        {\n            \"title\": \"Sample Movie 1\",\n            \"year\": 2023,\n            \"description\": \"A sample movie description.\",\n            \"rating\": 8.5\n        },\n        {\n            \"title\": \"Sample Movie 2\",\n            \"year\": 2023,\n            \"description\": \"Another sample movie description.\",\n            \"rating\": 7.8\n        }\n    ],\n    \"pagination\": {\n        \"page\": 1,\n        \"page_size\": 2,\n        \"total_pages\": 6,\n        \"has_next\": true,\n        \"has_previous\": false\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Get movies with Filter",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/movies?page=1&page-size=2&start_year=1900&end_year=2017",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"movies"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "page-size",
+							"value": "2"
+						},
+						{
+							"key": "start_year",
+							"value": "1900"
+						},
+						{
+							"key": "end_year",
+							"value": "2017"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Get movies with Filter",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/movies?page=1&page-size=2&start_year=1900&end_year=2017",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"movies"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "page-size",
+									"value": "2"
+								},
+								{
+									"key": "start_year",
+									"value": "1900"
+								},
+								{
+									"key": "end_year",
+									"value": "2017"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Sat, 09 Sep 2023 19:03:33 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "WSGIServer/0.2 CPython/3.9.18"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept, Cookie"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "299"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 200,\n    \"message\": \"\",\n    \"data\": [\n        {\n            \"title\": \"Movie 4\",\n            \"year\": 2017,\n            \"description\": \"Description for Movie 4.\",\n            \"rating\": 8\n        },\n        {\n            \"title\": \"Movie 5\",\n            \"year\": 2016,\n            \"description\": \"Description for Movie 5.\",\n            \"rating\": 7.9\n        }\n    ],\n    \"pagination\": {\n        \"page\": 1,\n        \"page_size\": 2,\n        \"total_pages\": 4,\n        \"has_next\": true,\n        \"has_previous\": false\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Get actors",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/actors?page=1&page-size=2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"actors"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "page-size",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Get actors",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/actors?page=1&page-size=2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"actors"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "page-size",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Sat, 09 Sep 2023 19:04:40 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "WSGIServer/0.2 CPython/3.9.18"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept, Cookie"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "690"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 200,\n    \"message\": \"\",\n    \"data\": [\n        {\n            \"name\": \"Actor 1\",\n            \"films\": [\n                \"https://insterview/movie/sample_movie_1\",\n                \"https://insterview/movie/movie_4\",\n                \"https://insterview/movie/movie_9\",\n                \"https://insterview/movie/movie_11\"\n            ],\n            \"birthday\": \"03031970\",\n            \"birthplace\": \"Chicago, IL\"\n        },\n        {\n            \"name\": \"Actor 2\",\n            \"films\": [\n                \"https://insterview/movie/sample_movie_2\",\n                \"https://insterview/movie/sample_movie_3\",\n                \"https://insterview/movie/movie_5\",\n                \"https://insterview/movie/movie_6\",\n                \"https://insterview/movie/movie_7\",\n                \"https://insterview/movie/movie_8\",\n                \"https://insterview/movie/movie_10\"\n            ],\n            \"birthday\": \"04041985\",\n            \"birthplace\": \"Miami, FL\"\n        }\n    ],\n    \"pagination\": {\n        \"page\": 1,\n        \"page_size\": 2,\n        \"total_pages\": 1,\n        \"has_next\": false,\n        \"has_previous\": false\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Get directors",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/directors?page=1&page-size=2&start_year=1900&end_year=2017",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"directors"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "page-size",
+							"value": "2"
+						},
+						{
+							"key": "start_year",
+							"value": "1900"
+						},
+						{
+							"key": "end_year",
+							"value": "2017"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Get directors",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/directors?page=1&page-size=2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"directors"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "page-size",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Sat, 09 Sep 2023 19:08:23 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "WSGIServer/0.2 CPython/3.9.18"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept, Cookie"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "519"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 200,\n    \"message\": \"\",\n    \"data\": [\n        {\n            \"name\": \"Director 1\",\n            \"films\": [\n                \"https://insterview/movie/sample_movie_1\",\n                \"https://insterview/movie/movie_5\",\n                \"https://insterview/movie/movie_8\"\n            ],\n            \"birthday\": \"01011975\",\n            \"birthplace\": \"Los Angeles, CA\"\n        },\n        {\n            \"name\": \"Director 2\",\n            \"films\": [\n                \"https://insterview/movie/sample_movie_2\",\n                \"https://insterview/movie/movie_4\",\n                \"https://insterview/movie/movie_11\"\n            ],\n            \"birthday\": \"02022012\",\n            \"birthplace\": \"New York, NY\"\n        }\n    ],\n    \"pagination\": {\n        \"page\": 1,\n        \"page_size\": 2,\n        \"total_pages\": 2,\n        \"has_next\": true,\n        \"has_previous\": false\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Get director Films",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/directors/:id/films?page=1&page-size=2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"directors",
+						":id",
+						"films"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "page-size",
+							"value": "2"
+						}
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "Director 1"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Get director Films",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/directors/:id/films?page=1&page-size=2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"directors",
+								":id",
+								"films"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "page-size",
+									"value": "2"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "Director 1"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Sat, 09 Sep 2023 19:09:29 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "WSGIServer/0.2 CPython/3.9.18"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept, Cookie"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "204"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 200,\n    \"message\": \"\",\n    \"data\": [\n        \"https://insterview/movie/sample_movie_1\",\n        \"https://insterview/movie/movie_5\"\n    ],\n    \"pagination\": {\n        \"page\": 1,\n        \"page_size\": 2,\n        \"total_pages\": 2,\n        \"has_next\": true,\n        \"has_previous\": false\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Get actor Films",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/actors/:id/films/?page=1&page-size=2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"actors",
+						":id",
+						"films",
+						""
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "page-size",
+							"value": "2"
+						}
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "Actor 1"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Get actor Films",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/actors/:id/films/?page=1&page-size=2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"actors",
+								":id",
+								"films",
+								""
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "page-size",
+									"value": "2"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "Actor 1"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Sat, 09 Sep 2023 19:09:19 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "WSGIServer/0.2 CPython/3.9.18"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept, Cookie"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "204"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 200,\n    \"message\": \"\",\n    \"data\": [\n        \"https://insterview/movie/sample_movie_1\",\n        \"https://insterview/movie/movie_4\"\n    ],\n    \"pagination\": {\n        \"page\": 1,\n        \"page_size\": 2,\n        \"total_pages\": 2,\n        \"has_next\": true,\n        \"has_previous\": false\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Get best movies",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/movies/best/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"movies",
+						"best",
+						""
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Get best movies",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/movies/best/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"movies",
+								"best",
+								""
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Sat, 09 Sep 2023 19:05:55 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "WSGIServer/0.2 CPython/3.9.18"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept, Cookie"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "942"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 200,\n    \"message\": \"\",\n    \"data\": [\n        {\n            \"title\": \"Movie 11\",\n            \"year\": 2017,\n            \"description\": \"Description for Movie 11.\",\n            \"rating\": 50\n        },\n        {\n            \"title\": \"Movie 9\",\n            \"year\": 2001,\n            \"description\": \"Description for Movie 9.\",\n            \"rating\": 10\n        },\n        {\n            \"title\": \"Movie 8\",\n            \"year\": 1997,\n            \"description\": \"Description for Movie 8.\",\n            \"rating\": 9\n        },\n        {\n            \"title\": \"Sample Movie 1\",\n            \"year\": 2023,\n            \"description\": \"A sample movie description.\",\n            \"rating\": 8.5\n        },\n        {\n            \"title\": \"Movie 4\",\n            \"year\": 2017,\n            \"description\": \"Description for Movie 4.\",\n            \"rating\": 8\n        },\n        {\n            \"title\": \"Movie 5\",\n            \"year\": 2016,\n            \"description\": \"Description for Movie 5.\",\n            \"rating\": 7.9\n        },\n        {\n            \"title\": \"Sample Movie 2\",\n            \"year\": 2023,\n            \"description\": \"Another sample movie description.\",\n            \"rating\": 7.8\n        },\n        {\n            \"title\": \"Sample Movie 3\",\n            \"year\": 2020,\n            \"description\": \"Another sample movie description.\",\n            \"rating\": 7.8\n        },\n        {\n            \"title\": \"Movie 6\",\n            \"year\": 2015,\n            \"description\": \"Description for Movie 6.\",\n            \"rating\": 7.7\n        },\n        {\n            \"title\": \"Movie 7\",\n            \"year\": 2005,\n            \"description\": \"Description for Movie 7.\",\n            \"rating\": 6\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "Get best movies with N",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/movies/best/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"movies",
+						"best",
+						"2"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Get best movies with N",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/movies/best/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"movies",
+								"best",
+								"2"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Sat, 09 Sep 2023 19:06:07 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "WSGIServer/0.2 CPython/3.9.18"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept, Cookie"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "212"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 200,\n    \"message\": \"\",\n    \"data\": [\n        {\n            \"title\": \"Movie 11\",\n            \"year\": 2017,\n            \"description\": \"Description for Movie 11.\",\n            \"rating\": 50\n        },\n        {\n            \"title\": \"Movie 9\",\n            \"year\": 2001,\n            \"description\": \"Description for Movie 9.\",\n            \"rating\": 10\n        }\n    ]\n}"
+				}
+			]
+		},
+		{
+			"name": "Get actor closet birthday",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/actors/birthdays/:date",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"actors",
+						"birthdays",
+						":date"
+					],
+					"variable": [
+						{
+							"key": "date",
+							"value": "2021-01-01"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Get actor closet birthday",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8000/actors/birthdays/:date",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"actors",
+								"birthdays",
+								":date"
+							],
+							"variable": [
+								{
+									"key": "date",
+									"value": "2021-01-01"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Sat, 09 Sep 2023 19:10:32 GMT"
+						},
+						{
+							"key": "Server",
+							"value": "WSGIServer/0.2 CPython/3.9.18"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept, Cookie"
+						},
+						{
+							"key": "Allow",
+							"value": "GET, HEAD, OPTIONS"
+						},
+						{
+							"key": "X-Frame-Options",
+							"value": "DENY"
+						},
+						{
+							"key": "Content-Length",
+							"value": "690"
+						},
+						{
+							"key": "X-Content-Type-Options",
+							"value": "nosniff"
+						},
+						{
+							"key": "Referrer-Policy",
+							"value": "same-origin"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"status\": 200,\n    \"message\": \"\",\n    \"data\": [\n        {\n            \"name\": \"Actor 2\",\n            \"films\": [\n                \"https://insterview/movie/sample_movie_2\",\n                \"https://insterview/movie/sample_movie_3\",\n                \"https://insterview/movie/movie_5\",\n                \"https://insterview/movie/movie_6\",\n                \"https://insterview/movie/movie_7\",\n                \"https://insterview/movie/movie_8\",\n                \"https://insterview/movie/movie_10\"\n            ],\n            \"birthday\": \"04041985\",\n            \"birthplace\": \"Miami, FL\"\n        },\n        {\n            \"name\": \"Actor 1\",\n            \"films\": [\n                \"https://insterview/movie/sample_movie_1\",\n                \"https://insterview/movie/movie_4\",\n                \"https://insterview/movie/movie_9\",\n                \"https://insterview/movie/movie_11\"\n            ],\n            \"birthday\": \"03031970\",\n            \"birthplace\": \"Chicago, IL\"\n        }\n    ],\n    \"pagination\": {\n        \"page\": 1,\n        \"page_size\": 5,\n        \"total_pages\": 1,\n        \"has_next\": false,\n        \"has_previous\": false\n    }\n}"
+				}
+			]
+		}
+	]
+}
