@@ -2,6 +2,22 @@
 
 Small coding tests to evaluate development skills using Python, Django and Django Rest Framework.
 
+## Python test goal
+
+The `test_instatest.py` file contains tests and empty functions for performing tasks in python. Each group of tests comes with instructions of what is required and some test data to use for testing.
+
+The candidate should:
+
+ * Create a new branch
+ * Install `pytest`
+ * Answer the questions
+ * Ensure that running `pytest` results in all tests passing in the `test_instatest.py` file
+ * For each question, write a comment in the favourite version of the method explaining why this is the best solution.
+
+The aim is to test the candidate's knowledge of python and its modules, and how to think about problems in different ways.
+
+When finished, the candidate should create a PR so that their work can be reviewed.
+
 ## Python test Goal (legacy)
 
 The `instatest_aws_sessions.py` file contains a class, a mock and some basic tests. The candidate should:
