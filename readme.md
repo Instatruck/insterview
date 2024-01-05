@@ -2,9 +2,9 @@
 
 Small coding tests to evaluate development skills using Python, Django and Django Rest Framework.
 
-## Python test Goal
+## Python test Goal (legacy)
 
-The `instatest.py` file contains a class, a mock and some basic tests. The candidate should:
+The `instatest_aws_sessions.py` file contains a class, a mock and some basic tests. The candidate should:
 
  * Fork the project
  * Read and understand the Wrapper class
@@ -14,7 +14,7 @@ The `instatest.py` file contains a class, a mock and some basic tests. The candi
 The aim is to understand your ability and pragmaticness of writing, testing and maintaining python code. The only rules in addition to the above are:
 
  * Python3 should be used
- * executing `python -m instatest` should not fail.
+ * executing `python -m instatest_aws_sessions` should not fail.
  * any tests should be able to be run with a single command in the root repository folder.
 
 ## Django / Django Rest Framework test goals
