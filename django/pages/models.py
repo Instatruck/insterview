@@ -1,7 +1,5 @@
 from django.db import models
 
-# Create your models here.
-
 
 class Movie(models.Model):
     movieid = models.IntegerField(primary_key=True)
@@ -17,6 +15,9 @@ class Movie(models.Model):
     gross_earning_in_mil = models.FloatField(blank=True, null=True, default=None)
     director = models.ForeignKey('Director', related_name='+', on_delete=models.CASCADE, null=True, blank=True)
     actor = models.ForeignKey('Actor', related_name='ActedBy+', on_delete=models.CASCADE, null=True, blank=True)
+    
+    class Meta:
+        db_table = 'movie'
 
 class Director(models.Model):
     name = models.CharField(max_length=100, primary_key=True)
@@ -27,6 +28,9 @@ class Director(models.Model):
     award_nom = models.IntegerField(blank=True, null=True, default=None)
     person_link = models.URLField(max_length=500, null=True, default=None)
     award_link = models.URLField(max_length=500, null=True, default=None)
+    
+    class Meta:
+        db_table = 'director'
 
 class Actor(models.Model):
     name = models.CharField(max_length=100, primary_key=True)
@@ -37,3 +41,6 @@ class Actor(models.Model):
     award_nom = models.IntegerField(blank=True, null=True, default=None)
     person_link = models.URLField(max_length=500, null=True, default=None)
     award_link = models.URLField(max_length=500, null=True, default=None)
+    
+    class Meta:
+        db_table = 'actor'
