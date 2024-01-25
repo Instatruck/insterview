@@ -19,7 +19,7 @@ urlpatterns = [
     path('api/movies/', MovieListView.as_view(), name='api_movies_list'),
     path('api/actors/', ActorListView.as_view(), name='api_actors_list'),
     path('api/directors/', DirectorListView.as_view(), name='api_directos_list'),
-    path('api/actors/<str:name>/films/', ActorFilmsView.as_view(), name='actor_films'),
-    path('api/directors/<str:name>/films/', DirectorFilmsView.as_view(), name='director_films'),
+    path('api/actors/<int:id>/films/', ActorFilmsView.as_view(), name='actor-films'),
+    path('api/directors/<int:id>/films/', DirectorFilmsView.as_view(), name='director-films'),
     
 ]
