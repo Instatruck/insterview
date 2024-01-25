@@ -33,3 +33,9 @@ class DirectorSerializer(serializers.Serializer):
         if request:
             return request.build_absolute_uri(f'/api/directors/{obj.id}/films/')
         return None
+
+class BestMovieSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Movie
+        fields = ['id', 'title', 'year', 'description', 'rating', 'metascore']
+

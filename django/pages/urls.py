@@ -2,7 +2,8 @@ from django.urls import path
 from django.conf.urls import url
 from . import views
 from pages.api_views import (
-    MovieListView, ActorListView, DirectorListView, ActorFilmsView, DirectorFilmsView
+    MovieListView, ActorListView, DirectorListView, ActorFilmsView, 
+    DirectorFilmsView, TopRatedMoviesView, ActorBirthdayView
 )
 urlpatterns = [
     path('', views.home, name='home'),
@@ -21,5 +22,8 @@ urlpatterns = [
     path('api/directors/', DirectorListView.as_view(), name='api_directos_list'),
     path('api/actors/<int:id>/films/', ActorFilmsView.as_view(), name='actor-films'),
     path('api/directors/<int:id>/films/', DirectorFilmsView.as_view(), name='director-films'),
+    path('api/movies/best/', TopRatedMoviesView.as_view(), name='top_rated_movies_default'),
+    path('api/movies/best/<n>/', TopRatedMoviesView.as_view(), name='top_rated_movies'),
+    path('api/actors/birthdays/<str:date>/', ActorBirthdayView.as_view(), name='actor-birthdays'),
     
 ]
