@@ -3,7 +3,6 @@ from pages.models import Movie, Actor, Director
 from django.utils.text import slugify
 
 class MovieSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
     title = serializers.CharField(max_length=255)
     year = serializers.IntegerField()
     description = serializers.CharField(style={'base_template': 'textarea.html'})
@@ -19,10 +18,8 @@ class ActorSerializer(serializers.Serializer):
     def get_films(self, obj):
         request = self.context.get('request')
         if request:
-            actor_slug = slugify(obj.name)
-            return request.build_absolute_uri(f'/actors/{actor_slug}/films/')
+            return request.build_absolute_uri(f'/api/actors/{obj.id}/films/')
         return None
-
 
 
 class DirectorSerializer(serializers.Serializer):
@@ -34,6 +31,5 @@ class DirectorSerializer(serializers.Serializer):
     def get_films(self, obj):
         request = self.context.get('request')
         if request:
-            director_slug = slugify(obj.name)
-            return request.build_absolute_uri(f'/directors/{director_slug}/films/')
+            return request.build_absolute_uri(f'/api/directors/{obj.id}/films/')
         return None

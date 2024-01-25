@@ -31,16 +31,15 @@ class MovieListView(APIView):
         return Response(serializer.data)
     
 class ActorFilmsView(APIView):
-    def get(self, request, name):
-        actor = get_object_or_404(Actor, name=name)
-        # Assuming a ForeignKey from Movie to Actor, you can directly access related movies
-        movies = Movie.objects.filter(actor=actor)
-        serializer = MovieSerializer(movies, many=True, context={'request': request})
+    def get(self, request, id):
+        actor = get_object_or_404(Actor, pk=id)
+        films = actor.movie_set.all()
+        serializer = MovieSerializer(films, many=True, context={'request': request})
         return Response(serializer.data)
-    
+
 class DirectorFilmsView(APIView):
-    def get(self, request, name):
-        director = get_object_or_404(Director, name=name)
-        movies = Movie.objects.filter(director=director)
-        serializer = MovieSerializer(movies, many=True, context={'request': request})
+    def get(self, request, id):
+        director = get_object_or_404(Actor, pk=id)
+        films = director.movie_set.all()
+        serializer = MovieSerializer(films, many=True, context={'request': request})
         return Response(serializer.data)
