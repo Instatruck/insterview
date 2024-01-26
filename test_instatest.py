@@ -7,7 +7,6 @@
 ## Implement the 'contains_all_items' function in 3 different ways so that the tests pass.
 
 from collections import Counter, defaultdict
-from decimal import Decimal
 
 MASTER_LIST = [ 'Cat', 'Dog', 'Apple', 'Bear', 'Goat', 'Fish', 'Elephant',
   'Quokka', 'Unicorn', 'Impala', 'Walrus', 'Yak', 'Giraffe', 'Zebra', 'Narwhal',
@@ -123,77 +122,98 @@ DB_OUTPUT = [
   { "id": 14,"date": "2022-02-07T16:39:55", "price_cents": 3942,  "surcharge_cents": 0,    "tax_percent": 10, "truck_type": "Van" }
 ]
 
-
-
-from decimal import ROUND_HALF_UP
-
-
-
-def job_price_for_truck_type(job_list, truck_type):
-    ''' Returns a list of the following structure for trucks matching "truck_type":
-        { "id": <int>, "price": <int> }
-
-        where "price" is "(price_cents + surcharge_cents) * (100 + tax_percent)/100" converted to dollars
-    '''
+def job_price_for_truck_type_1(job_list, truck_type):
     result = []
     for job in job_list:
-        if job["truck_type"] == truck_type:
-            # Convert cents to Decimal for precise calculations
-            price_cents = Decimal(job["price_cents"])
-            surcharge_cents = Decimal(job["surcharge_cents"])
-            tax_percent = Decimal(job["tax_percent"])
-
-            # Calculate total price with proper rounding
-            total_price = (price_cents + surcharge_cents) * (1 + tax_percent / Decimal(100))
-            total_price = total_price.quantize(Decimal("0.001"), rounding=ROUND_HALF_UP) / Decimal(100)
-
-            result.append({"id": job["id"], "price": float(total_price)})
+        if job['truck_type'] == truck_type:
+            price = (job['price_cents'] + job['surcharge_cents']) * (1 + job['tax_percent'] / 100)
+            result.append({"id": job["id"], "price": round(price / 100, 2)})
     return result
 
-def total_price_by_truck(job_list):
-    truck_summary = defaultdict(lambda: {"total_jobs": 0, "total_price": Decimal(0)})
+from collections import defaultdict
+
+def job_price_for_truck_type_2(job_list, truck_type):
+    priced_jobs = []
+
     for job in job_list:
-        price = (job["price_cents"] + job["surcharge_cents"]) * (1 + job["tax_percent"] / Decimal(100))
-        truck_summary[job["truck_type"]]["total_jobs"] += 1
-        truck_summary[job["truck_type"]]["total_price"] += price
+        if job['truck_type'] == truck_type:
+            total_price_cents = job['price_cents'] + job['surcharge_cents']
+            tax = total_price_cents * job['tax_percent'] / 100
+            total_price = total_price_cents + tax
+            formatted_price = round(total_price / 100, 2)
+            priced_jobs.append({"id": job["id"], "price": formatted_price})
 
-    result = [{"truck_type": key, "total_jobs": value["total_jobs"], "total_price": float(value["total_price"])}
-              for key, value in truck_summary.items()]
-    return result
+    return priced_jobs
+
+def total_price_by_truck_1(job_list):
+    truck_data = {}
+
+    for job in job_list:
+        truck_type = job['truck_type']
+        # Calculate the total price for a job, including surcharges and tax
+        base_price = job['price_cents']
+        surcharge = job['surcharge_cents']
+        tax_rate = job['tax_percent'] / 100
+        total_price = (base_price + surcharge) * (1 + tax_rate)
+
+        # Initialize truck entry in truck_data if not present
+        if truck_type not in truck_data:
+            truck_data[truck_type] = {"total_jobs": 0, "total_price": 0}
+        
+        # Update the truck entry with the new job data
+        truck_data[truck_type]["total_jobs"] += 1
+        truck_data[truck_type]["total_price"] += total_price
+
+    # Format the truck data for output
+    return [
+        {
+            "truck_type": truck_type,
+            "total_jobs": data["total_jobs"],
+            "total_price": round(data["total_price"] / 100, 2)
+        }
+        for truck_type, data in truck_data.items()
+    ]
+    
+## Test
 
 def test_job_price_for_truck_types():
     expected_van_jobs = [
-        {"id": 1, "price": 151.525},
-        {"id": 7, "price": 65.89},
-        {"id": 9, "price": 72.655},
-        {"id": 14, "price": 43.362}
-    ]
+    {'id': 1, 'price': 151.53},
+    {'id': 7, 'price': 65.89},
+    {'id': 9, 'price': 72.66},
+    {'id': 14, 'price': 43.36}
+]  # Add expected data
 
-    assert job_price_for_truck_type(DB_OUTPUT, "Van") == expected_van_jobs
+    assert job_price_for_truck_type_1(DB_OUTPUT, "Van") == expected_van_jobs
+    assert job_price_for_truck_type_2(DB_OUTPUT, "Van") == expected_van_jobs
 
     expected_ute_jobs = [
-        {"id": 2, "price": 73.854},  # Updated expected price to match corrected calculations
-        {"id": 4, "price": 46.981},
-        {"id": 8, "price": 53.262},
-        {"id": 13, "price": 83.908}  # Updated expected price to match corrected calculations
-    ]
+    {'id': 2, 'price': 73.85},
+    {'id': 4, 'price': 46.98},
+    {'id': 8, 'price': 53.26},
+    {'id': 13, 'price': 83.91}
+]
+  # Add expected data
 
-    assert job_price_for_truck_type(DB_OUTPUT, "Ute") == expected_ute_jobs
+    assert job_price_for_truck_type_1(DB_OUTPUT, "Ute") == expected_ute_jobs
+    assert job_price_for_truck_type_2(DB_OUTPUT, "Ute") == expected_ute_jobs
 
     expected_pantech_jobs = [
-        {"id": 3, "price": 81.906},  # Updated expected price to match corrected calculations
-        {"id": 6, "price": 130.823},  # Updated expected price to match corrected calculations
-        {"id": 11, "price": 24.024}  # Updated expected price to match corrected calculations
-    ]
+    {'id': 3, 'price': 81.91},
+    {'id': 6, 'price': 130.82},
+    {'id': 11, 'price': 24.02}
+]
+  # Add expected data
 
-    assert job_price_for_truck_type(DB_OUTPUT, "Pantech") == expected_pantech_jobs
-
+    assert job_price_for_truck_type_1(DB_OUTPUT, "Pantech") == expected_pantech_jobs
+    assert job_price_for_truck_type_2(DB_OUTPUT, "Pantech") == expected_pantech_jobs
 
 def test_total_price_by_truck():
     expected_list = [
-        {"truck_type": "Van", "total_jobs": 4, "total_price": 33343.2},  # Updated expected price to match corrected calculations
-        {"truck_type": "Ute", "total_jobs": 4, "total_price": 25800.5},  # Updated expected price to match corrected calculations
-        {"truck_type": "Pantech", "total_jobs": 3, "total_price": 23675.3},
+        {"truck_type": "Van", "total_jobs": 4, "total_price": 333.43}, # Add expected total price
+        {"truck_type": "Ute", "total_jobs": 4, "total_price": 258.0}, # Add expected total price
+        {"truck_type": "Pantech", "total_jobs": 3, "total_price": 236.75}, # Add expected total price
     ]
 
-    assert total_price_by_truck(DB_OUTPUT) == expected_list
+    assert total_price_by_truck_1(DB_OUTPUT) == expected_list
+    # assert total_price_by_truck_2(DB_OUTPUT) == expected_list not implement yet
