@@ -1,3 +1,58 @@
+## Virtual Environment Setup (must use python3.9 or upper)
+To create a virtual environment for testing using Python 3.9, follow these steps:
+
+1. **Create a Virtual Environment**:
+   - On macOS, open your terminal and run the following command:
+     ```shell
+     python3.9 -m venv venv
+     ```
+   - On Windows, open Command Prompt or PowerShell and run:
+     ```shell
+     python3.9 -m venv venv
+     ```
+2. **Activate the Virtual Environment**:
+   - On macOS, activate the virtual environment using:
+     ```shell
+     source venv/bin/activate
+     ```
+   - On Windows, activate the virtual environment using:
+     ```shell
+     venv\Scripts\activate
+     ```
+## Install dependencies by
+     ```pip install -r requirements.txt```
+
+## Test the result on terminal:
+
+1. Python test goal: `pytest test_instatest.py`
+2. Python test Goal (legacy): `pytest test_instatest_aws_sessions.py`
+3. Django API: cd to `django` directory and use command:
+   - ```python manage.py makemigrations```
+   - ```python manage.py migrate```
+   - ```python manage.py runserver```
+
+--------------------------------------------------------------------------
+## Testing by set up docker: cd to `django` directory
+
+`docker build -t movietest .`
+
+and run with:
+
+`docker run -v ${PWD}:/opt/project -p 8000:8000 movietest python3 manage.py runserver 0.0.0.0:8000`
+
+### Test these APIs on any Web browser: Google Chrome, Firefox
+    - http://localhost:8000/api/movies/ [name='api_movies_list']
+    - http://localhost:8000/api/actors/ [name='api_actors_list']
+    - http://localhost:8000/api/directors/ [name='api_directos_list']
+    - http://localhost:8000/api/actors/1/films/ [name='actor-films']
+    - http://localhost:8000/api/directors/2/films/ [name='director-films']
+    - http://localhost:8000/api/movies/best/ [name='top_rated_movies_default']
+    - http://localhost:8000/api/movies/best/5/ [name='top_rated_movies']
+    - http://1localhost:8000/api/actors/birthdays/13121986/
+as image sample:
+![Testing API](image.png)
+
+####################################################################################
 # Instatruck coding test
 
 Small coding tests to evaluate development skills using Python, Django and Django Rest Framework.
