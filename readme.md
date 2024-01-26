@@ -31,7 +31,7 @@ To create a virtual environment for testing using Python 3.9, follow these steps
    - ```python manage.py migrate```
    - ```python manage.py runserver```
 
-   # This is those API completed:
+   # This is those API completed and test these APIs on any Web browser: Google Chrome, Firefox
         http://localhost:8000/api/movies/ [name='api_movies_list']
         http://localhost:8000/api/actors/ [name='api_actors_list']
         http://localhost:8000/api/directors/ [name='api_directos_list']
@@ -49,7 +49,7 @@ and run with:
 
 `docker run -v ${PWD}:/opt/project -p 8000:8000 movietest python3 manage.py runserver 0.0.0.0:8000`
 
-### Test these API on any brower
+### Test these APIs on any Web browser: Google Chrome, Firefox
     http://localhost:8000/api/movies/ [name='api_movies_list']
     http://localhost:8000/api/actors/ [name='api_actors_list']
     http://localhost:8000/api/directors/ [name='api_directos_list']
