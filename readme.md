@@ -31,15 +31,6 @@ To create a virtual environment for testing using Python 3.9, follow these steps
    - ```python manage.py migrate```
    - ```python manage.py runserver```
 
-   # This is those API completed and test these APIs on any Web browser: Google Chrome, Firefox
-        http://localhost:8000/api/movies/ [name='api_movies_list']
-        http://localhost:8000/api/actors/ [name='api_actors_list']
-        http://localhost:8000/api/directors/ [name='api_directos_list']
-        http://localhost:8000/api/actors/<int:id>/films/ [name='actor-films']
-        http://localhost:8000/api/directors/<int:id>/films/ [name='director-films']
-        http://localhost:8000/api/movies/best/ [name='top_rated_movies_default']
-        http://localhost:8000/api/movies/best/<n>/ [name='top_rated_movies']
-        http://localhost:8000/api/actors/birthdays/<str:date>/ 
 --------------------------------------------------------------------------
 ## Testing by set up docker: cd to `django` directory
 
@@ -50,14 +41,14 @@ and run with:
 `docker run -v ${PWD}:/opt/project -p 8000:8000 movietest python3 manage.py runserver 0.0.0.0:8000`
 
 ### Test these APIs on any Web browser: Google Chrome, Firefox
-    http://localhost:8000/api/movies/ [name='api_movies_list']
-    http://localhost:8000/api/actors/ [name='api_actors_list']
-    http://localhost:8000/api/directors/ [name='api_directos_list']
-    http://localhost:8000/api/actors/<int:id>/films/ [name='actor-films']
-    http://localhost:8000/api/directors/<int:id>/films/ [name='director-films']
-    http://localhost:8000/api/movies/best/ [name='top_rated_movies_default']
-    http://localhost:8000/api/movies/best/<n>/ [name='top_rated_movies']
-    http://localhost:8000/api/actors/birthdays/<str:date>/ 
+    - http://localhost:8000/api/movies/ [name='api_movies_list']
+    - http://localhost:8000/api/actors/ [name='api_actors_list']
+    - http://localhost:8000/api/directors/ [name='api_directos_list']
+    - http://localhost:8000/api/actors/1/films/ [name='actor-films']
+    - http://localhost:8000/api/directors/2/films/ [name='director-films']
+    - http://localhost:8000/api/movies/best/ [name='top_rated_movies_default']
+    - http://localhost:8000/api/movies/best/5/ [name='top_rated_movies']
+    - http://1localhost:8000/api/actors/birthdays/13121986/
 as image sample:
 ![Testing API](image.png)
 

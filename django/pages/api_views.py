@@ -45,7 +45,7 @@ class MovieListView(APIView):
         if start_year and end_year and start_year > end_year:
             return Response({"error": "Start year cannot be greater than end year."}, status=status.HTTP_400_BAD_REQUEST)
 
-        movies = Movie.objects.all()
+        movies = get_all_movies()
 
         if start_year is not None:
             movies = movies.filter(year__gte=start_year)
@@ -92,9 +92,9 @@ class ActorBirthdayView(APIView):
             return Response({"error": "Invalid date format. Please use DDMMYYYY."}, status=400)
         closest_actors = []
         smallest_difference = timedelta.max
-
+        actors = get_all_actors()
         valid_date_found = False
-        for actor in Actor.objects.all():
+        for actor in actors:
             try:
                 actor_birthday = actor.date  # actor.birthdate is in "YYYY-MM-DD" format
                 actor_birthday = datetime.strptime(actor_birthday, "%Y-%m-%d").date()
