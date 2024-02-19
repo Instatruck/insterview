@@ -6,15 +6,15 @@ Small coding tests to evaluate development skills using Python, Django and Djang
 
 The `test_instatest.py` file contains tests and empty functions for performing tasks in python. Each group of tests comes with instructions of what is required and some test data to use for testing.
 
+The test consists of 4 questions. The aim of questions 1-3 is to test the candidate's knowledge of python and its modules, and how to think about problems in different ways. The aim of question 4 is to test the candidate's problem-solving skills for a common but complicated problem which requires some kind of generic solution.
+
 The candidate should:
 
  * Create a new branch
  * Install `pytest`
  * Answer the questions
  * Ensure that running `pytest` results in all tests passing in the `test_instatest.py` file
- * For each question, write a comment in the favourite version of the method explaining why this is the best solution.
-
-The aim is to test the candidate's knowledge of python and its modules, and how to think about problems in different ways.
+ * For questions 1-3, write a comment in the favourite version of the method explaining why this is the best solution.
 
 When finished, the candidate should create a PR so that their work can be reviewed.
 

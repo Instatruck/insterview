@@ -145,3 +145,219 @@ def test_total_price_by_truck():
 
     assert total_price_by_truck_1(DB_OUTPUT) == expected_list
     assert total_price_by_truck_2(DB_OUTPUT) == expected_list
+
+
+## 4. Advanced design concepts
+## Below is a class like a Django Model which supports multiple states.
+##
+## The system architecture means that clients can listen to an external NoSQL database path
+## in order to get real-time updates. For example, truck drivers listen to:
+##    `/jobs_assigned/<truck_id>/jobs/` (according to their truck ID)
+## Operations staff listen to
+##    `/jobs_new/`
+## All clients can also listen to:
+##    `/job_data/<job_id>/`
+##
+## You must provide a solution so that a change in state writes the data from a JobModel object
+## to the correct queue. For example:
+## A new job is:
+##    written to both `/jobs_new/<job_id>/` and `/job_data/<job_id>/`
+## A job assigned to a truck is:
+##    removed from `/jobs_new/` and added to `/jobs_assigned/<truck_id>/jobs/<job_id>/`
+## A job that is cancelled is:
+##    removed from all lists it is a part of (this depends on its state)
+##
+## Provide a solution which is flexible, and allows us to add more queues or states easily in the future.
+## You can write any new functions, classes, data structures, or modify the classes below, but NOT
+## the existing methods in the classes. They have already been written to support many other functions
+## and requirements in the system
+
+## "Database"
+JOBS_DB = dict()
+
+## JobModel: Cannot be modified
+class JobModel(object):
+
+    STATES = (
+        # Typical sequence is New -> Matched (to truck) -> Active -> Completed
+        ('N', 'New'), ('M', 'Matched'), ('A', 'Active'), ('F', 'Completed'), ('C', 'Cancelled')
+    )
+
+    def __init__(self, id):
+        self.state = 'N'
+        self.id = id
+        self.truck_id = None
+
+    def set_state(self, new_state):
+        supported_states = map(lambda x: x[0], self.STATES)
+        if new_state not in supported_states:
+            raise RuntimeError("Unsupported state requested")
+
+        self.state = new_state
+        return self
+
+    def set_assigned_to(self, truck_id):
+        self.truck_id = truck_id
+        return self
+
+    def clear_truck(self):
+        self.truck_id = None
+        return self
+
+    def save(self):
+        # Emulate saving to a database
+        JOBS_DB[self.id] = self
+
+class Controller():
+
+    def __init__(self, db):
+        self.db = db
+
+    def sync_db(self, job_object):
+        # This performs all synchronising of the database. This must be called to perform all the
+        # necessary operations on the database/databases it controls.
+        # THIS IS A STANDARD INTERFACE AND MUST BE IMPLEMENTED
+        pass
+
+class DBWriter(object):
+
+    def __init__(self):
+        self.db_commands = []
+
+    def reset(self):
+        self.db_commands = []
+
+    def write_object_to_path(self, path, obj):
+        # This would write to a third-party database service. For simplicity it stores a command to
+        # write the correct contents to the command list.
+        self.db_commands.append((path, {'id': obj.id, 'state': obj.state}))
+
+    def remove_object_from_path(self, path, obj):
+        # This would write to a third-party database service. For simplicity it stores a command to
+        # write an empty dict to the command list.
+        self.db_commands.append((path, {}))
+
+
+
+def test_single_job_standard_lifecycle():
+
+    # DB Writer and controller
+    db = DBWriter()
+    controller = Controller(db)
+
+    # A new job
+    job = JobModel(1)
+    job.save()
+    controller.sync_db(job)
+    assert ('/jobs_new/1/', {'id': 1, 'state': 'N'}) in db.db_commands
+    assert ('/job_data/1/', {'id': 1, 'state': 'N'}) in db.db_commands
+
+    # A job is matched
+    db.reset()
+    job.set_state("A").set_assigned_to("truck1").save()
+    controller.sync_db(job)
+    assert ('/jobs_new/1/', {}) in db.db_commands
+    assert ('/jobs_assigned/truck1/jobs/1/', {'id': 1, 'state': 'M'}) in db.db_commands
+    assert ('/job_data/1/', {'id': 1, 'state': 'M'}) in db.db_commands
+
+    # A job becomes active (from being matched)
+    db.reset()
+    job.set_state('A').save()
+    controller.sync_db(job)
+    assert ('/jobs_assigned/truck1/jobs/1/', {'id': 1, 'state': 'A'}) in db.db_commands
+    assert ('/job_data/1/', {'id': 1, 'state': 'A'}) in db.db_commands
+
+    # A job is completed. This removes it from all lists.
+    db.reset()
+    job.set_state('F').save()
+    controller.sync_db(job)
+    assert ('/job_data/1/', {}) in db.db_commands
+    assert ('/jobs_assigned/truck1/jobs/1/', {}) in db.db_commands
+
+def test_single_job_rejected_and_cancelled():
+
+    # DB Writer and controller
+    db = DBWriter()
+    controller = Controller(db)
+
+    # A new job
+    job = JobModel(2)
+    job.save()
+    controller.sync_db(job)
+    assert ('/jobs_new/2/', {'id': 2, 'state': 'N'}) in db.db_commands
+    assert ('/job_data/2/', {'id': 2, 'state': 'N'}) in db.db_commands
+
+    # A job is matched
+    db.reset()
+    job.set_state("A").set_assigned_to("truck1").save()
+    controller.sync_db(job)
+    assert ('/jobs_new/2/', {}) in db.db_commands
+    assert ('/jobs_assigned/truck1/jobs/2/', {'id': 2, 'state': 'M'}) in db.db_commands
+    assert ('/job_data/2/', {'id': 2, 'state': 'M'}) in db.db_commands
+
+    # The job is rejected by a driver -> Back to 'new'
+    db.reset()
+    job.set_state("N").clear_truck().save()
+    controller.sync_db(job)
+    assert ('/jobs_assigned/truck1/jobs/2/', {}) in db.db_commands
+    assert ('/jobs_new/2/', {'id': 2, 'state': 'N'}) in db.db_commands
+    assert ('/job_data/2/', {'id': 2, 'state': 'N'}) in db.db_commands
+
+    # The job is cancelled
+    db.reset()
+    job.set_state("C").save()
+    controller.sync_db(job)
+    assert ('/jobs_new/2/', {}) in db.db_commands
+    assert ('/job_data/2/', {}) in db.db_commands
+
+# Imagine if a new state was added to the model: ('S', 'Suspended'). This is a job which was active but
+# has a problem with the delivery, and needs attention by Operations.
+# Operations need to listen to a list for suspended jobs '/jobs_suspended/<job_id>/'
+# The job is still considered to be active (so in the '/jobs_active/' list) and also in the `/job_data/`
+# list, but these lists must be updated.
+# Modify the JobModel to have an extra state, so that the following tests pass. The design you
+# implemented for the previous tests should mean that this amount of new code is small.
+def test_single_job_suspended_and_cancelled():
+
+    # DB Writer and controller
+    db = DBWriter()
+    controller = Controller(db)
+
+    # A new job
+    job = JobModel(3)
+    job.save()
+    controller.sync_db(job)
+    assert ('/jobs_new/3/', {'id': 3, 'state': 'N'}) in db.db_commands
+    assert ('/job_data/3/', {'id': 3, 'state': 'N'}) in db.db_commands
+
+    # A job is matched
+    db.reset()
+    job.set_state("A").set_assigned_to("truck21").save()
+    controller.sync_db(job)
+    assert ('/jobs_new/3/', {}) in db.db_commands
+    assert ('/jobs_assigned/truck21/jobs/3/', {'id': 3, 'state': 'M'}) in db.db_commands
+    assert ('/job_data/3/', {'id': 3, 'state': 'M'}) in db.db_commands
+
+    # A job becomes active (from being matched)
+    db.reset()
+    job.set_state('A').save()
+    controller.sync_db(job)
+    assert ('/jobs_assigned/truck21/jobs/3/', {'id': 3, 'state': 'A'}) in db.db_commands
+    assert ('/job_data/3/', {'id': 3, 'state': 'A'}) in db.db_commands
+
+    # The job is suspended
+    db.reset()
+    job.set_state('S').save()
+    controller.sync_db(job)
+    assert ('/jobs_assigned/truck21/jobs/3/', {'id': 3, 'state': 'S'}) in db.db_commands
+    assert ('/jobs_suspended/3/', {'id': 3, 'state': 'S'}) in db.db_commands
+    assert ('/job_data/3/', {'id': 3, 'state': 'S'}) in db.db_commands
+
+    # The job is cancelled because of a big problem. It is cleared from all queues.
+    db.reset()
+    job.set_state('C').save()
+    controller.sync_db(job)
+    assert ('/jobs_assigned/truck21/jobs/3/', {}) in db.db_commands
+    assert ('/jobs_suspended/3/', {}) in db.db_commands
+    assert ('/job_data/3/', {}) in db.db_commands
+
