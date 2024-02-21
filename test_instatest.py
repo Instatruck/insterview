@@ -499,6 +499,8 @@ def test_single_job_rejected_and_cancelled():
     assert ('/jobs_assigned/truck1/jobs/2/', {'id': 2, 'state': 'M'}) in db.db_commands
     assert ('/job_data/2/', {'id': 2, 'state': 'M'}) in db.db_commands
 
+    '''I got trouble with this case because I can't get the truck_id (in this case is truck1) after '''
+    '''clear_truck() and save().'''
     # The job is rejected by a driver -> Back to 'new'
     db.reset()
     job.set_state("N").clear_truck().save()
