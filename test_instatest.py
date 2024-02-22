@@ -1,3 +1,10 @@
+import importlib
+
+from collections import Counter
+from decimal import Decimal
+import pandas as pd
+
+
 # Tests for insterview
 
 ## 1.
@@ -9,17 +16,23 @@ MASTER_LIST = [ 'Cat', 'Dog', 'Apple', 'Bear', 'Goat', 'Fish', 'Elephant',
   'Quokka', 'Unicorn', 'Impala', 'Walrus', 'Yak', 'Giraffe', 'Zebra', 'Narwhal',
   'Rhinceros', 'Vulture', 'Tiger', 'Kangaroo', 'Lion', 'Sloth', 'Jaguar', 'Ostrich']
 
+### Method 1: procedural
 def contains_all_items_1(test_list):
-    # Complete this function in 3 different ways
-    pass
+    for item in test_list:
+        if item not in MASTER_LIST:
+            return False
+    return True
 
+### Method 2: use built-in all() function --> Preferred
+### I think this way is the best because:
+### - Has same performance with method 1, and faster than method 3 (computed with bigger input)
+### - Leverage all benefits of using built-in functions (improve readability, efficiency,...)
 def contains_all_items_2(test_list):
-    # Complete this function in 3 different ways
-    pass
+    return all(item in MASTER_LIST for item in test_list)
 
+### Method 3: this way is slower due to the overhead of converting list() to set()
 def contains_all_items_3(test_list):
-    # Complete this function in 3 different ways
-    pass
+    return set(test_list).issubset(set(MASTER_LIST))
 
 def test_list_contains_multiple_items():
     test_list = ['Apple', 'Jaguar', 'Bear', 'Fish', 'Narwhal']
@@ -62,17 +75,51 @@ ADDRESS_LIST = [
  '123 Fake Street, Sydney, NSW'
 ]
 
-def most_frequent_1():
-    # Complete this function in 3 different ways
-    pass
+### Method 1: use built-in function sorted()
+def most_frequent_1(address_list):
+    address_frequency_table = dict()
+    for address in address_list:
+        if address in address_frequency_table:
+            address_frequency_table[address] += 1
+        else:
+            address_frequency_table[address] = 1
+    sorted_address_list = sorted(address_frequency_table.items(), key=lambda item: item[1], reverse=True)
 
-def most_frequent_2():
-    # Complete this function in 3 different ways
-    pass
+    return [
+        sorted_address_list[0][0],
+        sorted_address_list[1][0],
+        sorted_address_list[2][0],
+    ]
 
-def most_frequent_3():
-    # Complete this function in 3 different ways
-    pass
+### Method 2: use built-in function max()
+def most_frequent_2(address_list):
+    address_frequency_table = dict()
+    for address in address_list:
+        if address in address_frequency_table:
+            address_frequency_table[address] += 1
+        else:
+            address_frequency_table[address] = 1
+    
+    most_frequent_address = max(address_frequency_table.items(), key=lambda item: item[1])[0]
+
+    del address_frequency_table[most_frequent_address]
+    second_most_frequent_address = max(address_frequency_table.items(), key=lambda item: item[1])[0]
+
+    del address_frequency_table[second_most_frequent_address]
+    third_most_frequent_address = max(address_frequency_table.items(), key=lambda item: item[1])[0]
+
+    return [
+        most_frequent_address,
+        second_most_frequent_address,
+        third_most_frequent_address,
+    ]
+
+### Method 3: use Counter.most_common() method --> Preferred
+### I think this way is the best because:
+### - Significantly faster than method 1 and method 2 when the ADDRESS_LIST is bigger
+### - Less code, increase readability
+def most_frequent_3(address_list):
+    return [item[0] for item in Counter(address_list).most_common(3)]
 
 def test_get_most_frequent():
     expected = ['789 Maple Drive, Brisbane, QLD', '321 Oak Street, Perth, WA', '654 Cedar Lane, Gold Coast, QLD']
@@ -103,44 +150,100 @@ DB_OUTPUT = [
   { "id": 14,"date": "2022-02-07T16:39:55", "price_cents": 3942,  "surcharge_cents": 0,    "tax_percent": 10, "truck_type": "Van" }
 ]
 
-def job_price_for_truck_type(job_list, truck_type):
-    ''' Returns a list of the following structure for trucks matching "truck_type":
-        { "id": <int>, "price": <int> }
+### Utility function
+### Use Decimal object for monetary values to maximize the precision
+def get_job_price(job):
+    price = (Decimal(job["price_cents"]) + Decimal(job["surcharge_cents"])) * ((Decimal(100) + Decimal(job["tax_percent"])) / Decimal(100)) / Decimal(100)
+    return price
 
-        where "price" is "(price_cents + surcharge_cents) * (100 + tax_percent)/100" converted to dollars
-    '''
-    pass
+### Method 1: use built-in functions filter(), map()
+### This method is slower than method 2 due to overhead of converting map() to list()
+def job_price_for_truck_type_1(job_list, truck_type):
+    filtered_job_list = filter(lambda job: job["truck_type"] == truck_type, job_list)
+    price_list = list(map(
+        lambda job: {
+            "id": job["id"],
+            "price": get_job_price(job).quantize(Decimal('.01'))
+        },
+        filtered_job_list
+    ))
 
-def total_price_by_truck(job_list):
-    ''' Returns a list of the following structures:
-        { "truck_type": <truck type>, "total_jobs": <int>, "total_price": <int> }
+    return price_list
 
-        where "total_jobs" is the total number of jobs for the truck type
-        and "total_price" is the total price for the truck type
-    '''
-    pass
+### Method 2: use list comprehensive only --> Preferred
+### I think this way is better because:
+### - Faster than method 1 because of less overhead
+### - Shorter, more readable
+def job_price_for_truck_type_2(job_list, truck_type):
+    filtered_job_list = [job for job in job_list if job['truck_type'] == truck_type]
+    return [{ 'id': job['id'], 'price': get_job_price(job).quantize(Decimal('.01')) } for job in filtered_job_list]
+
+### Method 1: procedural --> Preferred
+### In this case, this method is faster than method 2 because of using Python type Decimal()
+def total_price_by_truck_1(job_list):
+    price_table = dict()
+    for job in job_list:
+        if job["truck_type"] in price_table:
+            price_table[job["truck_type"]]["total_jobs"] += 1
+            price_table[job["truck_type"]]["total_price"] += get_job_price(job)
+        else:
+            price_table[job["truck_type"]] = {
+                "total_jobs": 1,
+                "total_price": get_job_price(job)
+            }
+    return [{ "truck_type": k, "total_jobs": v["total_jobs"], "total_price": v["total_price"].quantize(Decimal('.01'))} for k, v in price_table.items()]
+
+### Method 2: use pandas
+### - Slower than method 1 because of the overhead of converting to Decimal()
+### - Faster than method 1 if do not require Decimal() and with bigger dataset
+def total_price_by_truck_2(job_list):
+    df = pd.DataFrame(job_list)
+    df['total_jobs'] = 0
+    df['total_price'] = 0
+    df['price_cents'] = df['price_cents'].apply(lambda x: Decimal(x))
+    df['surcharge_cents'] = df['surcharge_cents'].apply(lambda x: Decimal(x))
+    df['tax_percent'] = df['tax_percent'].apply(lambda x: Decimal(x))
+    df['total_price'] = (df['price_cents'] + df['surcharge_cents']) * ((Decimal(100) + df['tax_percent']) / Decimal(100)) / Decimal(100)
+    df['total_price'] = df['total_price'].apply(lambda x: x.quantize(Decimal('.01')))
+    df_out = df.groupby('truck_type', sort=False).agg({'total_jobs': 'count', 'total_price': 'sum'}).reset_index()
+    return df_out.to_dict(orient='records')
+
 
 def test_job_price_for_truck_types():
-    expected_van_jobs = []  # Add expected data
+    expected_van_jobs = [
+        {'id': 1, 'price': Decimal('151.52')},
+        {'id': 7, 'price': Decimal('65.89')},
+        {'id': 9, 'price': Decimal('72.66')},
+        {'id': 14, 'price': Decimal('43.36')}
+    ]
 
     assert job_price_for_truck_type_1(DB_OUTPUT, "Van") == expected_van_jobs
     assert job_price_for_truck_type_2(DB_OUTPUT, "Van") == expected_van_jobs
 
-    expected_ute_jobs = []  # Add expected data
+    expected_ute_jobs = [
+        {'id': 2, 'price': Decimal('73.85')},
+        {'id': 4, 'price': Decimal('46.98')},
+        {'id': 8, 'price': Decimal('53.26')},
+        {'id': 13, 'price': Decimal('83.91')}
+    ]
 
     assert job_price_for_truck_type_1(DB_OUTPUT, "Ute") == expected_ute_jobs
     assert job_price_for_truck_type_2(DB_OUTPUT, "Ute") == expected_ute_jobs
 
-    expected_pantech_jobs = []  # Add expected data
+    expected_pantech_jobs = [
+        {'id': 3, 'price': Decimal('81.91')},
+        {'id': 6, 'price': Decimal('130.82')},
+        {'id': 11, 'price': Decimal('24.02')}
+    ]
 
     assert job_price_for_truck_type_1(DB_OUTPUT, "Pantech") == expected_pantech_jobs
     assert job_price_for_truck_type_2(DB_OUTPUT, "Pantech") == expected_pantech_jobs
 
 def test_total_price_by_truck():
     expected_list = [
-        {"truck_type": "Van", "total_jobs": "4", "total_price": None}, # Add expected total price
-        {"truck_type": "Ute", "total_jobs": "4", "total_price": None}, # Add expected total price
-        {"truck_type": "Pantech", "total_jobs": "3", "total_price": None}, # Add expected total price
+        {'truck_type': 'Van', 'total_jobs': 4, 'total_price': Decimal('333.43')},
+        {'truck_type': 'Ute', 'total_jobs': 4, 'total_price': Decimal('258.00')},
+        {'truck_type': 'Pantech', 'total_jobs': 3, 'total_price': Decimal('236.75')}
     ]
 
     assert total_price_by_truck_1(DB_OUTPUT) == expected_list
@@ -180,7 +283,7 @@ class JobModel(object):
 
     STATES = (
         # Typical sequence is New -> Matched (to truck) -> Active -> Completed
-        ('N', 'New'), ('M', 'Matched'), ('A', 'Active'), ('F', 'Completed'), ('C', 'Cancelled')
+        ('N', 'New'), ('M', 'Matched'), ('A', 'Active'), ('F', 'Completed'), ('C', 'Cancelled'), ('S', 'Suspended')
     )
 
     def __init__(self, id):
@@ -208,6 +311,10 @@ class JobModel(object):
         # Emulate saving to a database
         JOBS_DB[self.id] = self
 
+## Local database for storing queues information of jobs
+## Sample data: { 1: { 'queues': { 'New': { 'path': '/jobs_new/1/' } } } }
+LOCAL_DB = dict()
+
 class Controller():
 
     def __init__(self, db):
@@ -217,7 +324,23 @@ class Controller():
         # This performs all synchronising of the database. This must be called to perform all the
         # necessary operations on the database/databases it controls.
         # THIS IS A STANDARD INTERFACE AND MUST BE IMPLEMENTED
-        pass
+
+        # Explain my design:
+        # Implement job handlers in handlers/jobs, file names are the verbose names of all job states
+        # Implement queue handlers in handlers/queues, file names are the queue names which will be used by
+        # JobHandler.get_queues() method.
+        # To implement a new job state: add a new file in handlers/jobs, the file name must be the state verbose name,
+        # create a new class which extends the handlers.jobs.base.BaseJobHandler, and override method get_queues().
+        # To implement a new queue: add a new file in handlers/queues, the file name is the queue name to be used
+        # by method JobHandler.get_queues(), create a new class which extends the handlers.queues.BaseQueueHandler,
+        # and override method build_path().
+        job_state_verbose = dict(JobModel.STATES)[job_object.state]
+        job_handler = getattr(
+            importlib.import_module(f'handlers.jobs.{job_state_verbose.lower()}'),
+            'JobHandler'
+        )(job_object, self.db, LOCAL_DB)
+        job_handler.sync_db()
+
 
 class DBWriter(object):
 
@@ -254,7 +377,7 @@ def test_single_job_standard_lifecycle():
 
     # A job is matched
     db.reset()
-    job.set_state("A").set_assigned_to("truck1").save()
+    job.set_state("M").set_assigned_to("truck1").save()  # I think it must be "M", hope I am right...
     controller.sync_db(job)
     assert ('/jobs_new/1/', {}) in db.db_commands
     assert ('/jobs_assigned/truck1/jobs/1/', {'id': 1, 'state': 'M'}) in db.db_commands
@@ -289,12 +412,14 @@ def test_single_job_rejected_and_cancelled():
 
     # A job is matched
     db.reset()
-    job.set_state("A").set_assigned_to("truck1").save()
+    job.set_state("M").set_assigned_to("truck1").save()
     controller.sync_db(job)
     assert ('/jobs_new/2/', {}) in db.db_commands
     assert ('/jobs_assigned/truck1/jobs/2/', {'id': 2, 'state': 'M'}) in db.db_commands
     assert ('/job_data/2/', {'id': 2, 'state': 'M'}) in db.db_commands
 
+    '''I got trouble with this case because I can't get the truck_id (in this case is truck1) after '''
+    '''clear_truck() and save().'''
     # The job is rejected by a driver -> Back to 'new'
     db.reset()
     job.set_state("N").clear_truck().save()
@@ -332,7 +457,7 @@ def test_single_job_suspended_and_cancelled():
 
     # A job is matched
     db.reset()
-    job.set_state("A").set_assigned_to("truck21").save()
+    job.set_state("M").set_assigned_to("truck21").save()
     controller.sync_db(job)
     assert ('/jobs_new/3/', {}) in db.db_commands
     assert ('/jobs_assigned/truck21/jobs/3/', {'id': 3, 'state': 'M'}) in db.db_commands
