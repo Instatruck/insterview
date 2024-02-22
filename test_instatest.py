@@ -2,6 +2,9 @@ from collections import Counter
 from decimal import Decimal
 import pandas as pd
 
+from handlers import jobs
+
+
 # Tests for insterview
 
 ## 1.
@@ -308,6 +311,10 @@ class JobModel(object):
         # Emulate saving to a database
         JOBS_DB[self.id] = self
 
+## Local database for storing queues information of jobs
+## Sample data: { 1: { 'queues': { 'New': { 'path': '/jobs_new/1/' } } } }
+LOCAL_DB = dict()
+
 class Controller():
 
     def __init__(self, db):
@@ -318,110 +325,9 @@ class Controller():
         # necessary operations on the database/databases it controls.
         # THIS IS A STANDARD INTERFACE AND MUST BE IMPLEMENTED
 
-        state = job_object.state
-        if state == 'N':
-            # Add to jobs_new
-            self.db.write_object_to_path(
-                self.build_path_jobs_new(job_object),
-                job_object
-            )
-            # Add to jobs_data
-            self.db.write_object_to_path(
-                self.build_path_job_data(job_object),
-                job_object
-            )
-            # Remove from jobs_assigned
-            self.db.remove_object_from_path(
-                self.build_path_jobs_assigned(job_object),
-                job_object
-            )
-        elif state == 'M':
-            # Remove from jobs_new
-            self.db.remove_object_from_path(
-                self.build_path_jobs_new(job_object),
-                job_object
-            )
-            # Add to jobs_assigned
-            self.db.write_object_to_path(
-                self.build_path_jobs_assigned(job_object),
-                job_object
-            )
-            # Update state in jobs_data
-            self.db.write_object_to_path(
-                self.build_path_job_data(job_object),
-                job_object
-            )
-        elif state == 'A':
-            # Update state in jobs_assigned
-            self.db.write_object_to_path(
-                self.build_path_jobs_assigned(job_object),
-                job_object
-            )
-            # Update state in jobs_data
-            self.db.write_object_to_path(
-                self.build_path_job_data(job_object),
-                job_object
-            )
-        elif state == 'F':
-            # Remove from jobs_data
-            self.db.remove_object_from_path(
-                self.build_path_job_data(job_object),
-                job_object
-            )
-            # Remove from jobs_assigned
-            self.db.remove_object_from_path(
-                self.build_path_jobs_assigned(job_object),
-                job_object
-            )
-        elif state == 'C':
-            # Remove from jobs_new
-            self.db.remove_object_from_path(
-                self.build_path_jobs_new(job_object),
-                job_object
-            )
-             # Remove from jobs_data
-            self.db.remove_object_from_path(
-                self.build_path_job_data(job_object),
-                job_object
-            )
-            # Remove from jobs_assigned
-            self.db.remove_object_from_path(
-                self.build_path_jobs_assigned(job_object),
-                job_object
-            )
-            # Remove from jobs_suspended
-            self.db.remove_object_from_path(
-                self.build_path_jobs_suspended(job_object),
-                job_object
-            )
-        elif state == 'S':
-            # Add to jobs_suspended
-            self.db.write_object_to_path(
-                self.build_path_jobs_suspended(job_object),
-                job_object
-            )
-            # Update state in jobs_assigned
-            self.db.write_object_to_path(
-                self.build_path_jobs_assigned(job_object),
-                job_object
-            )
-            # Update state in jobs_data
-            self.db.write_object_to_path(
-                self.build_path_job_data(job_object),
-                job_object
-            )
+        job_handler = getattr(jobs, f'JobHandler{job_object.state}')(job_object, self.db, LOCAL_DB)
+        job_handler.sync_db()
 
-    def build_path_jobs_new(self, job_object):
-        return f'/jobs_new/{job_object.id}/'
-    
-    def build_path_job_data(self, job_object):
-        return f'/job_data/{job_object.id}/'
-
-    def build_path_jobs_assigned(self, job_object):
-        return f'/jobs_assigned/{job_object.truck_id}/jobs/{job_object.id}/'
-            
-    def build_path_jobs_suspended(self, job_object):
-        return f'/jobs_suspended/{job_object.id}/'
 
 class DBWriter(object):
 
