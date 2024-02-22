@@ -1,8 +1,8 @@
+import importlib
+
 from collections import Counter
 from decimal import Decimal
 import pandas as pd
-
-from handlers import jobs
 
 
 # Tests for insterview
@@ -325,7 +325,20 @@ class Controller():
         # necessary operations on the database/databases it controls.
         # THIS IS A STANDARD INTERFACE AND MUST BE IMPLEMENTED
 
-        job_handler = getattr(jobs, f'JobHandler{job_object.state}')(job_object, self.db, LOCAL_DB)
+        # Explain my design:
+        # Implement job handlers in handlers/jobs, file names are the verbose names of all job states
+        # Implement queue handlers in handlers/queues, file names are the queue names which will be used by
+        # JobHandler.get_queues() method.
+        # To implement a new job state: add a new file in handlers/jobs, the file name must be the state verbose name,
+        # create a new class which extends the handlers.jobs.base.BaseJobHandler, and override method get_queues().
+        # To implement a new queue: add a new file in handlers/queues, the file name is the queue name to be used
+        # by method JobHandler.get_queues(), create a new class which extends the handlers.queues.BaseQueueHandler,
+        # and override method build_path().
+        job_state_verbose = dict(JobModel.STATES)[job_object.state]
+        job_handler = getattr(
+            importlib.import_module(f'handlers.jobs.{job_state_verbose.lower()}'),
+            'JobHandler'
+        )(job_object, self.db, LOCAL_DB)
         job_handler.sync_db()
 
 

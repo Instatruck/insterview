@@ -1,9 +1,9 @@
+import importlib
+
 from abc import ABC, abstractmethod
 
-from . import queues as queue_handlers
 
-
-class JobHandler(ABC):
+class BaseJobHandler(ABC):
     def __init__(self, job_object, db_writer, local_db):
         self.job_object = job_object
         self.db_writer = db_writer
@@ -24,7 +24,7 @@ class JobHandler(ABC):
         # Put to queues which are valid for the current state
         queues_data = {}
         for q in queues:
-            queue_handler = getattr(queue_handlers, f'QueueHandler{q}')(self.job_object)
+            queue_handler = getattr(importlib.import_module(f'handlers.queues.{q}'), 'QueueHandler')(self.job_object)
             path = queue_handler.build_path()
             self.db_writer.write_object_to_path(path, self.job_object)
 
@@ -42,28 +42,3 @@ class JobHandler(ABC):
     @abstractmethod
     def get_queues(self):
         pass
-
-class JobHandlerN(JobHandler):
-    def get_queues(self):
-        return ['New', 'Data']
-
-class JobHandlerM(JobHandler):
-    def get_queues(self):
-        return ['Assigned', 'Data']
-
-class JobHandlerA(JobHandler):
-    def get_queues(self):
-        return ['Assigned', 'Data']
-
-class JobHandlerF(JobHandler):
-    def get_queues(self):
-        return []
-
-class JobHandlerC(JobHandler):
-    def get_queues(self):
-        return []
-
-# Implement new state "Suspended"
-class JobHandlerS(JobHandler):
-    def get_queues(self):
-        return ['Suspended', 'Assigned', 'Data']
