@@ -364,7 +364,7 @@ def test_single_job_standard_lifecycle():
 
     # A job is matched
     db.reset()
-    job.set_state("M").set_assigned_to("truck1").save()
+    job.set_state("M").set_assigned_to("truck1").save()  # I think it must be "M", hope I am right...
     controller.sync_db(job)
     assert ('/jobs_new/1/', {}) in db.db_commands
     assert ('/jobs_assigned/truck1/jobs/1/', {'id': 1, 'state': 'M'}) in db.db_commands
